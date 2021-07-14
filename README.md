@@ -1,29 +1,12 @@
-textract
+textract-lite
 ========
 
 A text extraction node module.
 
 ## Currently Extracts...
 
-* HTML, HTM
-* ATOM, RSS
-* Markdown
-* EPUB
-* XML, XSL
-* PDF
-* DOC, DOCX
-* ODT, OTT (experimental, feedback needed!)
-* RTF
-* XLS, XLSX, XLSB, XLSM, XLTX
-* CSV
-* ODS, OTS
-* PPTX, POTX
-* ODP, OTP
-* ODG, OTG
-* PNG, JPG, GIF
-* DXF
-* `application/javascript`
-* All `text/*` mime-types.
+* DOCX
+* TXT.
 
 In almost all cases above, what textract cares about is the mime type.  So `.html` and `.htm`, both possessing the same mime type, will be extracted.  Other extensions that share mime types with those above should also extract successfully. For example, `application/vnd.ms-excel` is the mime type for `.xls`, but also for 5 other file types.
 
@@ -32,18 +15,12 @@ _Does textract not extract from files of the type you need?_  Add an issue or su
 ## Install
 
 ```
-npm i @nosferatu500/textract
+npm i @nosferatu500/textract-lite
 ```
 
 ## Extraction Requirements
 
 Note, if any of the requirements below are missing, textract will run and extract all files for types it is capable.  Not having these items installed does not prevent you from using textract, it just prevents you from extracting those specific files.
-
-* `PDF` extraction requires `pdftotext` be installed, [link](http://www.foolabs.com/xpdf/download.html)
-* `DOC` extraction requires `antiword` be installed, [link](http://www.winfield.demon.nl/), unless on OSX in which case textutil (installed by default) is used.
-* `RTF` extraction requires `unrtf` be installed, [link](https://www.gnu.org/software/unrtf/), unless on OSX in which case textutil (installed by default) is used.
-* `PNG`, `JPG` and `GIF` require `tesseract` to be available, [link](http://code.google.com/p/tesseract-ocr/).  Images need to be pretty clear, high DPI and made almost entirely of just text for `tesseract` to be able to accurately extract the text.
-* `DXF` extraction requires `drawingtotext` be available, [link](https://github.com/davidworkman9/drawingtotext)
 
 ## Configuration
 

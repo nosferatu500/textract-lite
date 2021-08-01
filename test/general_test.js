@@ -2,8 +2,7 @@
 /* global textract, fromFileWithPath, fromFileWithMimeAndPath, fromBufferWithName, fromBufferWithMime, fromUrl */
 
 var path = require( 'path' )
-  , fs = require( 'fs' )
-  ;
+  , fs = require( 'fs' );
 
 describe( 'textract', function() {
   it( 'should be an object', function() {
@@ -15,7 +14,6 @@ describe( 'textract', function() {
     expect( typeof fromFileWithMimeAndPath ).to.eql( 'function' );
     expect( typeof fromBufferWithName ).to.eql( 'function' );
     expect( typeof fromBufferWithMime ).to.eql( 'function' );
-    expect( typeof fromUrl ).to.eql( 'function' );
   });
 
   describe( 'will error out gracefully', function() {
@@ -26,18 +24,6 @@ describe( 'textract', function() {
         expect( error ).to.be.an( 'object' );
         expect( error.message ).to.be.an( 'string' );
         expect( error.message ).to.eql( 'File at path [[ ' + filePath + ' ]] does not exist.' );
-        done();
-      });
-    });
-
-    it( 'when file has unregistered mime type', function( done ) {
-      var filePath = path.join( __dirname, 'files', 'MxAgCrProd.ppt' );
-      fromFileWithPath( filePath, function( error, text ) {
-        expect( text ).to.be.null;
-        expect( error ).to.be.an( 'object' );
-        expect( error.message ).to.be.an( 'string' );
-        expect( error.typeNotFound ).to.be.true;
-        expect( error.message.substring( 0, 61 ) ).to.eql( 'Error for type: [[ application/vnd.ms-powerpoint ]], file: [[' );
         done();
       });
     });
@@ -157,44 +143,26 @@ describe( 'textract', function() {
 
     it( 'fromBufferWithMime(mimeType, buffer, options, callback)', function( done ) {
       var filePath = path.join( __dirname, 'files', 'new docx(1).docx' )
-        , textBuff = fs.readFileSync( filePath )
-        ;
-
+        , textBuff = fs.readFileSync( filePath );
       fromBufferWithMime( 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', textBuff, {}, test( done ) );
     });
 
     it( 'fromBufferWithMime(mimeType, buffer, callback)', function( done ) {
       var filePath = path.join( __dirname, 'files', 'new docx(1).docx' )
-        , textBuff = fs.readFileSync( filePath )
-        ;
-
+        , textBuff = fs.readFileSync( filePath );
       fromBufferWithMime( 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', textBuff, test( done ) );
     });
 
     it( 'fromBufferWithName(fileName, buffer, options, callback)', function( done ) {
       var filePath = path.join( __dirname, 'files', 'new docx(1).docx' )
-        , textBuff = fs.readFileSync( filePath )
-        ;
-
+        , textBuff = fs.readFileSync( filePath );
       fromBufferWithName( filePath, textBuff, {}, test( done ) );
     });
 
     it( 'fromBufferWithName(fileName, buffer, callback)', function( done ) {
       var filePath = path.join( __dirname, 'files', 'new docx(1).docx' )
-        , textBuff = fs.readFileSync( filePath )
-        ;
-
+        , textBuff = fs.readFileSync( filePath );
       fromBufferWithName( filePath, textBuff, test( done ) );
-    });
-
-    it( 'fromUrl(url, options, callback)', function( done ) {
-      var url = 'https://cdn.rawgit.com/dbashford/textract/master/test/files/new%20docx(1).docx?raw=true';
-      fromUrl( url, {}, test( done ) );
-    });
-
-    it( 'fromUrl1(url,callback)', function( done ) {
-      var url = 'https://cdn.rawgit.com/dbashford/textract/master/test/files/new%20docx(1).docx?raw=true';
-      fromUrl( url, test( done ) );
     });
   });
 });

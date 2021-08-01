@@ -25,23 +25,23 @@
     "text"
   ],
   "dependencies": {
-    "mime": "2.2.0",
-    "xpath": "0.0.23",
+    "mime": "2.5.2",
+    "xpath": "0.0.32",
     "xmldom": "^0.6.0",
-    "meow": "^6.1.1",
-    "html-entities": "1.2.0",
-    "iconv-lite": "0.4.15",
-    "jschardet": "1.4.1",
-    "yauzl": "2.7.0"
+    "meow": "^9.0.0",
+    "html-entities": "2.3.2",
+    "iconv-lite": "0.6.3",
+    "jschardet": "3.0.0",
+    "yauzl": "2.10.0"
   },
   "devDependencies": {
-    "chai": "1.5.0",
-    "eslint": "^6.7.2",
-    "eslint-config-airbnb": "^18.1.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.19.0",
-    "mocha": "^7.2.0"
+    "chai": "4.3.4",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.24.0",
+    "mocha": "^9.0.3"
   },
   "scripts": {
     "test": "node_modules/.bin/mocha",

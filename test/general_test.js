@@ -21,7 +21,7 @@ describe( 'textract', function() {
       var filePath = 'foo/bar/foo.txt';
       fromFileWithPath( filePath, function( error, text ) {
         expect( text ).to.be.null;
-        expect( error ).to.be.an( 'object' );
+        expect( error ).to.be.an( 'error' );
         expect( error.message ).to.be.an( 'string' );
         expect( error.message ).to.eql( 'File at path [[ ' + filePath + ' ]] does not exist.' );
         done();

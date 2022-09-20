@@ -100,7 +100,7 @@ function initializeExtractors(options: any) {
     totalExtractors = extractors.length;
 }
 
-function findExtractor(type: any) {
+function findExtractor(type: string) {
     let i;
     const iLen = regexExtractors.length;
     let extractor;
@@ -120,7 +120,7 @@ function findExtractor(type: any) {
     return extractor;
 }
 
-export function extract(type: any, filePath: string, options: any, cb: any) {
+export function extract(type: string, filePath: string, options: any, cb: any) {
     let error;
     let msg;
     let theExtractor;

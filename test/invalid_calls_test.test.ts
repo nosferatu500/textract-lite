@@ -11,7 +11,10 @@ const test = function (done: any) {
             expect(text).to.be.null;
             expect(error).to.be.an("error");
             expect(error.message).to.be.an("string");
-            expect(error.message).to.eql("Incorrect parameters passed to textract.");
+            expect(error.message).to.satisfies((message: string) => {
+                if (message === "File at path [[ false ]] does not exist." || "Incorrect parameters passed to textract.") return true;
+                return false;
+            });
             done();
         };
     },

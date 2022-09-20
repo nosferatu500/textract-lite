@@ -35,7 +35,7 @@ export function yauzlError(err: any, cb: any) {
     cb(new Error(msg), null);
 }
 
-export function createExecOptions(type: any, options: any) {
+export function createExecOptions(type: string, options: any) {
     let execOptions = {};
     if (options[type] && options[type].exec) {
         execOptions = options[type].exec;
@@ -45,7 +45,7 @@ export function createExecOptions(type: any, options: any) {
     return execOptions;
 }
 
-export function unzipCheck(type: any, cb: any) {
+export function unzipCheck(type: string, cb: any) {
     exec("unzip", function (error: any) {
         if (error) {
             console.error(

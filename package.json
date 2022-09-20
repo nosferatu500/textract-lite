@@ -1,6 +1,6 @@
 {
   "name": "@nosferatu500/textract-lite",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "homepage": "https://github.com/nosferatu500/textract-lite",
   "description": "Extracting text from files of various type including html, pdf, doc, docx, xls, xlsx, csv, pptx, png, jpg, gif, rtf, text/*, and various open office.",
   "main": "./dist/index.js",

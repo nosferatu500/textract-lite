@@ -10,7 +10,7 @@ function _genRandom() {
     return Math.floor(Math.random() * 100_000_000_000 + 1);
 }
 
-function _extractWithType(type: any, filePath: string, options: any, cb: any) {
+function _extractWithType(type: string, filePath: string, options: any, cb: any) {
     if (fs.existsSync(filePath)) {
         extract(type, filePath, options, cb);
     } else {
@@ -54,19 +54,17 @@ function _writeBufferToDisk(buff: Buffer, cb: any) {
     });
 }
 
-export function fromFileWithMimeAndPath(type: any, filePath: string, options: any, cb: any) {
+export function fromFileWithMimeAndPath(type: string, filePath: string, options: any, cb: any) {
     let called = false;
 
-    if (typeof type === "string" && typeof filePath === "string") {
-        if (typeof cb === "function" && typeof options === "object") {
-            // (mimeType, filePath, options, callback)
-            _extractWithType(type, filePath, options, cb);
-            called = true;
-        } else if (typeof options === "function" && cb === undefined) {
-            // (mimeType, filePath, callback)
-            _extractWithType(type, filePath, {}, options);
-            called = true;
-        }
+    if (typeof cb === "function" && typeof options === "object") {
+        // (mimeType, filePath, options, callback)
+        _extractWithType(type, filePath, options, cb);
+        called = true;
+    } else if (typeof options === "function" && cb === undefined) {
+        // (mimeType, filePath, callback)
+        _extractWithType(type, filePath, {}, options);
+        called = true;
     }
 
     if (!called) {
@@ -76,7 +74,7 @@ export function fromFileWithMimeAndPath(type: any, filePath: string, options: an
 
 export function fromFileWithPath(filePath: string, options: any, cb: any) {
     let type;
-    if (typeof filePath === "string" && (typeof options === "function" || typeof cb === "function")) {
+    if (typeof options === "function" || typeof cb === "function") {
         type = (options && options.typeOverride) || mime.getType(filePath);
         fromFileWithMimeAndPath(type, filePath, options, cb);
     } else {
@@ -84,9 +82,8 @@ export function fromFileWithPath(filePath: string, options: any, cb: any) {
     }
 }
 
-export function fromBufferWithMime(type: any, bufferContent: Buffer, options: any, cb: any) {
+export function fromBufferWithMime(type: string, bufferContent: Buffer, options: any, cb: any) {
     if (
-        typeof type === "string" &&
         bufferContent &&
         bufferContent instanceof Buffer &&
         (typeof options === "function" || typeof cb === "function")
@@ -108,9 +105,8 @@ export function fromBufferWithMime(type: any, bufferContent: Buffer, options: an
 }
 
 export function fromBufferWithName(filePath: string, bufferContent: Buffer, options: any, cb: any) {
-    let type;
-    if (typeof filePath === "string") {
-        type = mime.getType(filePath);
+    const type = mime.getType(filePath);
+    if (typeof type === "string") {
         fromBufferWithMime(type, bufferContent, options, cb);
     } else {
         _returnArgsError(arguments);

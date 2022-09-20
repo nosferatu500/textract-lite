@@ -1,7 +1,7 @@
-const { exec } = require("child_process");
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
+import { exec } from "child_process";
+import fs from "fs";
+import os from "os";
+import path from "path";
 
 const outDir = path.join(os.tmpdir(), "textract");
 const replacements = [
@@ -17,9 +17,9 @@ if (!fs.existsSync(outDir)) {
 }
 
 // replace nasty quotes with simple ones
-function replaceBadCharacters(text) {
+export function replaceBadCharacters(text: string) {
     let i;
-    let repl;
+    let repl: any;
     for (i = 0; i < rLen; i++) {
         repl = replacements[i];
         text = text.replace(repl[0], repl[1]);
@@ -27,7 +27,7 @@ function replaceBadCharacters(text) {
     return text;
 }
 
-function yauzlError(err, cb) {
+export function yauzlError(err: any, cb: any) {
     let msg = err.message;
     if (msg === "end of central directory record signature not found") {
         msg = `File not correctly recognized as zip file, ${msg}`;
@@ -35,7 +35,7 @@ function yauzlError(err, cb) {
     cb(new Error(msg), null);
 }
 
-function createExecOptions(type, options) {
+export function createExecOptions(type: any, options: any) {
     let execOptions = {};
     if (options[type] && options[type].exec) {
         execOptions = options[type].exec;
@@ -45,10 +45,9 @@ function createExecOptions(type, options) {
     return execOptions;
 }
 
-function unzipCheck(type, cb) {
-    exec("unzip", function (error /* , stdout, stderr */) {
+export function unzipCheck(type: any, cb: any) {
+    exec("unzip", function (error: any) {
         if (error) {
-            // eslint-disable-next-line no-console
             console.error(
                 `textract: 'unzip' does not appear to be installed, ` + `so textract will be unable to extract ${type}.`
             );
@@ -57,8 +56,8 @@ function unzipCheck(type, cb) {
     });
 }
 
-function getTextFromZipFile(zipfile, entry, cb) {
-    zipfile.openReadStream(entry, function (err, readStream) {
+export function getTextFromZipFile(zipfile: any, entry: any, cb: any) {
+    zipfile.openReadStream(entry, function (err: any, readStream: any) {
         let text = "";
         let error = "";
         if (err) {
@@ -66,7 +65,7 @@ function getTextFromZipFile(zipfile, entry, cb) {
             return;
         }
 
-        readStream.on("data", function (chunk) {
+        readStream.on("data", function (chunk: any) {
             text += chunk;
         });
         readStream.on("end", function () {
@@ -76,7 +75,7 @@ function getTextFromZipFile(zipfile, entry, cb) {
                 cb(null, text);
             }
         });
-        readStream.on("error", function (_err) {
+        readStream.on("error", function (_err: any) {
             error += _err;
         });
     });
@@ -101,53 +100,42 @@ function getTextFromZipFile(zipfile, entry, cb) {
  * @param {string} cb callback that is passed error/text
  *
  */
-function runExecIntoFile(label, filePath, options, execOptions, genCommand, cb) {
+export function runExecIntoFile(label: any, filePath: any, options: any, execOptions: any, genCommand: any, cb: any) {
     // escape the file paths
     const fileTempOutPath = path.join(outDir, path.basename(filePath, path.extname(filePath)));
     const escapedFilePath = filePath.replace(/\s/g, "\\ ");
     const escapedFileTempOutPath = fileTempOutPath.replace(/\s/g, "\\ ");
     const cmd = genCommand(options, escapedFilePath, escapedFileTempOutPath);
-    exec(cmd, execOptions, function (error /* , stdout, stderr */) {
+    exec(cmd, execOptions, function (error: any) {
         if (error !== null) {
             error = new Error(`Error extracting [[ ${path.basename(filePath)} ]], exec error: ${error.message}`);
             cb(error, null);
             return;
         }
 
-        fs.exists(`${fileTempOutPath}.txt`, function (exists) {
-            if (exists) {
-                fs.readFile(`${fileTempOutPath}.txt`, "utf8", function (error2, text) {
-                    if (error2) {
-                        error2 = new Error(
-                            `Error reading${label} output at [[ ${fileTempOutPath} ]], error: ${error2.message}`
-                        );
-                        cb(error2, null);
-                    } else {
-                        fs.unlink(`${fileTempOutPath}.txt`, function (error3) {
-                            if (error3) {
-                                error3 = new Error(
-                                    `Error, ${label} , cleaning up temp file [[ ${fileTempOutPath} ]], error: ${error3.message}`
-                                );
-                                cb(error3, null);
-                            } else {
-                                cb(null, text.toString());
-                            }
-                        });
-                    }
-                });
-            } else {
-                error = new Error(`Error reading ${label} output at [[ ${fileTempOutPath} ]], file does not exist`);
-                cb(error, null);
-            }
-        });
+        if (fs.existsSync(`${fileTempOutPath}.txt`)) {
+            fs.readFile(`${fileTempOutPath}.txt`, "utf8", function (error2: any, text: string) {
+                if (error2) {
+                    error2 = new Error(
+                        `Error reading${label} output at [[ ${fileTempOutPath} ]], error: ${error2.message}`
+                    );
+                    cb(error2, null);
+                } else {
+                    fs.unlink(`${fileTempOutPath}.txt`, function (error3) {
+                        if (error3) {
+                            error3 = new Error(
+                                `Error, ${label} , cleaning up temp file [[ ${fileTempOutPath} ]], error: ${error3.message}`
+                            );
+                            cb(error3, null);
+                        } else {
+                            cb(null, text.toString());
+                        }
+                    });
+                }
+            });
+        } else {
+            error = new Error(`Error reading ${label} output at [[ ${fileTempOutPath} ]], file does not exist`);
+            cb(error, null);
+        }
     });
 }
-
-module.exports = {
-    createExecOptions,
-    unzipCheck,
-    getTextFromZipFile,
-    yauzlError,
-    runExecIntoFile,
-    replaceBadCharacters,
-};

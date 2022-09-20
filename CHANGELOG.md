@@ -1,3 +1,8 @@
+### 4.0.0
+* Moved on TS.
+* Bump node >= 16
+* Remove ./bin/...
+
 ### 3.0.2
 * Bump deps.
 

@@ -1,8 +1,8 @@
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
-const mime = require("mime");
-const extract = require("./extract");
+import fs from "fs";
+import os from "os";
+import path from "path";
+import mime from "mime";
+import { extract } from "./extract";
 
 const tmpDir = os.tmpdir();
 
@@ -10,17 +10,15 @@ function _genRandom() {
     return Math.floor(Math.random() * 100_000_000_000 + 1);
 }
 
-function _extractWithType(type, filePath, options, cb) {
-    fs.exists(filePath, function (exists) {
-        if (exists) {
-            extract(type, filePath, options, cb);
-        } else {
-            cb(new Error(`File at path [[ ${filePath} ]] does not exist.`), null);
-        }
-    });
+function _extractWithType(type: any, filePath: string, options: any, cb: any) {
+    if (fs.existsSync(filePath)) {
+        extract(type, filePath, options, cb);
+    } else {
+        cb(new Error(`File at path [[ ${filePath} ]] does not exist.`), null);
+    }
 }
 
-function _returnArgsError(_args) {
+function _returnArgsError(_args: any) {
     const args = Array.prototype.slice.call(_args);
     let callback;
     for (const parm of args) {
@@ -32,19 +30,18 @@ function _returnArgsError(_args) {
     if (callback) {
         callback(new Error("Incorrect parameters passed to textract."), null);
     } else {
-        // eslint-disable-next-line no-console
         console.error("textract could not find a callback function to execute.");
     }
 }
 
-function _writeBufferToDisk(buff, cb) {
+function _writeBufferToDisk(buff: Buffer, cb: any) {
     const fullPath = path.join(tmpDir, `textract_file_${_genRandom()}`);
 
-    fs.open(fullPath, "w", function (err, fd) {
+    fs.open(fullPath, "w", function (err: any, fd: any) {
         if (err) {
             throw new Error(`error opening temp file: ${err}`);
         } else {
-            fs.write(fd, buff, 0, buff.length, null, function (err2) {
+            fs.write(fd, buff, 0, buff.length, null, function (err2: any) {
                 if (err2) {
                     throw new Error(`error writing temp file: ${err2}`);
                 } else {
@@ -57,7 +54,7 @@ function _writeBufferToDisk(buff, cb) {
     });
 }
 
-function fromFileWithMimeAndPath(type, filePath, options, cb) {
+export function fromFileWithMimeAndPath(type: any, filePath: string, options: any, cb: any) {
     let called = false;
 
     if (typeof type === "string" && typeof filePath === "string") {
@@ -77,7 +74,7 @@ function fromFileWithMimeAndPath(type, filePath, options, cb) {
     }
 }
 
-function fromFileWithPath(filePath, options, cb) {
+export function fromFileWithPath(filePath: string, options: any, cb: any) {
     let type;
     if (typeof filePath === "string" && (typeof options === "function" || typeof cb === "function")) {
         type = (options && options.typeOverride) || mime.getType(filePath);
@@ -87,8 +84,7 @@ function fromFileWithPath(filePath, options, cb) {
     }
 }
 
-// eslint-disable-next-line no-unused-vars
-function fromBufferWithMime(type, bufferContent, options, cb, withPath) {
+export function fromBufferWithMime(type: any, bufferContent: Buffer, options: any, cb: any) {
     if (
         typeof type === "string" &&
         bufferContent &&
@@ -99,10 +95,10 @@ function fromBufferWithMime(type, bufferContent, options, cb, withPath) {
             cb = options;
             options = {};
         }
-        _writeBufferToDisk(bufferContent, function (newPath) {
-            fromFileWithMimeAndPath(type, newPath, options, function (err, text) {
+        _writeBufferToDisk(bufferContent, function (newPath: string) {
+            fromFileWithMimeAndPath(type, newPath, options, function (err: any, text: string) {
                 // Remove temporary file regardless of error, ignore error on unlink
-                fs.unlink(newPath, function () {});
+                fs.unlink(newPath, function () { });
                 if (cb) cb(err, text);
             });
         });
@@ -111,19 +107,12 @@ function fromBufferWithMime(type, bufferContent, options, cb, withPath) {
     }
 }
 
-function fromBufferWithName(filePath, bufferContent, options, cb) {
+export function fromBufferWithName(filePath: string, bufferContent: Buffer, options: any, cb: any) {
     let type;
     if (typeof filePath === "string") {
         type = mime.getType(filePath);
-        fromBufferWithMime(type, bufferContent, options, cb, true);
+        fromBufferWithMime(type, bufferContent, options, cb);
     } else {
         _returnArgsError(arguments);
     }
 }
-
-module.exports = {
-    fromFileWithPath,
-    fromFileWithMimeAndPath,
-    fromBufferWithName,
-    fromBufferWithMime,
-};

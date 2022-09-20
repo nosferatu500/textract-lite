@@ -1,9 +1,9 @@
-const fs = require("fs");
-const path = require("path");
-const iconv = require("iconv-lite");
-const jschardet = require("jschardet");
+import fs from "fs";
+import path from "path";
+import iconv from "iconv-lite";
+import jschardet from "jschardet";
 
-function extractText(filePath, options, cb) {
+function extractText(filePath: string, options: any, cb: any) {
     fs.readFile(filePath, function (error, data) {
         let encoding;
         let decoded;
@@ -30,7 +30,7 @@ function extractText(filePath, options, cb) {
     });
 }
 
-module.exports = {
+export default {
     types: [/text\//, "application/csv", "application/javascript"],
     extract: extractText,
-};
+}

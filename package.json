@@ -1,21 +1,74 @@
 {
   "name": "@nosferatu500/textract-lite",
-  "version": "3.0.5",
+  "version": "4.0.0",
   "homepage": "https://github.com/nosferatu500/textract-lite",
   "description": "Extracting text from files of various type including html, pdf, doc, docx, xls, xlsx, csv, pptx, png, jpg, gif, rtf, text/*, and various open office.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "author": "David Bashford <dbashford@hotmail.com>",
   "contributors": [
-    {
-      "name": "David Bashford",
-      "email": "dbashford@hotmail.com"
-    },
     {
       "name": "Vitalii Shvetsov",
       "email": "vitalya199529@gmail.com"
     }
   ],
+  "engines": {
+    "node": ">=16"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/nosferatu500/textract-lite"
+  },
+  "scripts": {
+    "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
+    "test": "mocha --require ts-node/register test/**/*.test.ts --exit",
+    "clean": "rm -rf dist build package",
+    "ts-node": "ts-node",
+    "docs": "typedoc --entryPoints src/index.ts",
+    "build": "yarn clean && tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.8.2",
+    "html-entities": "^2.3.3",
+    "iconv-lite": "^0.6.3",
+    "jschardet": "^3.0.0",
+    "mime": "^3.0.0",
+    "xpath": "^0.0.32",
+    "yauzl": "^2.10.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.3",
+    "@types/chai-as-promised": "^7.1.5",
+    "@types/mime": "^3.0.1",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^16.11.59",
+    "@types/yauzl": "^2.10.0",
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "@typescript-eslint/parser": "^5.38.0",
+    "chai": "^4.3.6",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^8.23.1",
+    "mocha": "^10.0.0",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.23.15",
+    "typescript": "^4.8.3"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not ie <= 11",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "keywords": [
     "textract-lite",
@@ -23,54 +76,5 @@
     "extract",
     "docx",
     "text"
-  ],
-  "prettier": {
-    "semi": true,
-    "trailingComma": "es5",
-    "singleQuote": false,
-    "bracketSameLine": false,
-    "tabWidth": 4,
-    "printWidth": 120
-  },
-  "dependencies": {
-    "@xmldom/xmldom": "^0.8.2",
-    "html-entities": "^2.3.3",
-    "iconv-lite": "0.6.3",
-    "jschardet": "3.0.0",
-    "meow": "^9.0.0",
-    "mime": "3.0.0",
-    "xpath": "0.0.32",
-    "yauzl": "2.10.0"
-  },
-  "devDependencies": {
-    "chai": "^4.3.6",
-    "eslint": "^8.14.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-react": "^7.29.4",
-    "eslint-plugin-sonarjs": "^0.13.0",
-    "eslint-plugin-unicorn": "^42.0.0",
-    "mocha": "^9.2.2",
-    "prettier": "^2.6.2"
-  },
-  "scripts": {
-    "test": "node_modules/.bin/mocha",
-    "prettier": "prettier --write '{lib,test}/**/*.js'",
-    "lint": "yarn prettier && node_modules/.bin/eslint -c .eslintrc.json lib --fix"
-  },
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
-  "engines": {
-    "node": ">=14"
-  },
-  "bin": {
-    "textract": "./bin/textract"
-  },
-  "main": "./lib/index"
+  ]
 }

@@ -1,13 +1,13 @@
-const fs = require("fs");
-const path = require("path");
-const { decode } = require("html-entities");
-const util = require("./util");
+import fs from "fs";
+import path from "path";
+import { decode } from "html-entities";
+import { replaceBadCharacters } from "./utils";
 
 const extractorPath = path.join(__dirname, "extractors");
 const entitiesDecode = decode;
-const typeExtractors = {};
-const regexExtractors = [];
-const failedExtractorTypes = {};
+const typeExtractors: any = {};
+const regexExtractors: any[] = [];
+const failedExtractorTypes: any = {};
 let totalExtractors = 0;
 let satisfiedExtractors = 0;
 let hasInitialized = false;
@@ -17,7 +17,7 @@ const WHITELIST_PRESERVE_LINEBREAKS =
 const WHITELIST_STRIP_LINEBREAKS =
     /[^\d !"#$%&'-\w'()-_`a-z{|}~\u0080-\u1FFF\u2013–\u2014\u2015\u2018\u2019\u201C\u201D„\u2026\u20AC\u2116\u2C00-\uD7FF\uFB50\uFDFF\uFE70\uFEFF\uFF01-\uFFE6]*/g;
 // eslint-disable-line max-len
-function registerExtractor(extractor) {
+function registerExtractor(extractor: any) {
     if (extractor.types) {
         for (let type of extractor.types) {
             if (typeof type === "string") {
@@ -30,7 +30,7 @@ function registerExtractor(extractor) {
     }
 }
 
-function registerFailedExtractor(extractor, failedMessage) {
+function registerFailedExtractor(extractor: any, failedMessage: string) {
     if (extractor.types) {
         for (const type of extractor.types) {
             failedExtractorTypes[type.toLowerCase()] = failedMessage;
@@ -38,11 +38,11 @@ function registerFailedExtractor(extractor, failedMessage) {
     }
 }
 
-function testExtractor(extractor, options) {
-    extractor.test(options, function (passedTest, failedMessage) {
+function testExtractor(extractor: any, options: any) {
+    extractor.test(options, function (passedTest: any, failedMessage: string) {
         satisfiedExtractors++;
         if (passedTest) {
-            registerExtractor(extractor);
+            registerExtractor(extractor.default);
         } else {
             registerFailedExtractor(extractor, failedMessage);
         }
@@ -50,11 +50,11 @@ function testExtractor(extractor, options) {
 }
 
 // global, all file type, content cleansing
-function cleanseText(options, cb) {
-    return function (error, text) {
+function cleanseText(options: any, cb: any) {
+    return function (error: any, text: string) {
         if (!error) {
             // clean up text
-            text = util.replaceBadCharacters(text);
+            text = replaceBadCharacters(text);
 
             if (options.preserveLineBreaks || options.preserveOnlyMultipleLineBreaks) {
                 if (options.preserveOnlyMultipleLineBreaks) {
@@ -74,13 +74,11 @@ function cleanseText(options, cb) {
     };
 }
 
-function initializeExtractors(options) {
-    let extractors;
-
+function initializeExtractors(options: any) {
     hasInitialized = true;
 
     // discover available extractors
-    extractors = fs.readdirSync(extractorPath).map(function (item) {
+    const extractors = fs.readdirSync(extractorPath).map(function (item: any) {
         const fullExtractorPath = path.join(extractorPath, item);
         // get the extractor
         // eslint-disable-next-line global-require
@@ -94,7 +92,7 @@ function initializeExtractors(options) {
             testExtractor(extractor, options);
         } else {
             satisfiedExtractors++;
-            registerExtractor(extractor);
+            registerExtractor(extractor.default);
         }
     }
 
@@ -102,7 +100,7 @@ function initializeExtractors(options) {
     totalExtractors = extractors.length;
 }
 
-function findExtractor(type) {
+function findExtractor(type: any) {
     let i;
     const iLen = regexExtractors.length;
     let extractor;
@@ -122,7 +120,7 @@ function findExtractor(type) {
     return extractor;
 }
 
-function extract(type, filePath, options, cb) {
+export function extract(type: any, filePath: string, options: any, cb: any) {
     let error;
     let msg;
     let theExtractor;
@@ -150,7 +148,6 @@ function extract(type, filePath, options, cb) {
             }
 
             error = new Error(msg);
-            error.typeNotFound = true;
             cb(error, null);
         }
     } else {
@@ -161,5 +158,3 @@ function extract(type, filePath, options, cb) {
         }, 100);
     }
 }
-
-module.exports = extract;

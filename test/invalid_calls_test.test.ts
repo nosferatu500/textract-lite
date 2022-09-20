@@ -1,7 +1,13 @@
-/* global fromUrl */
+import { describe } from "mocha";
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import { fromFileWithPath, fromFileWithMimeAndPath, fromBufferWithName, fromBufferWithMime } from "../src";
 
-var test = function (done) {
-        return function (error, text) {
+chai.use(chaiAsPromised);
+const expect = chai.expect;
+
+const test = function (done: any) {
+        return function (error: any, text: string) {
             expect(text).to.be.null;
             expect(error).to.be.an("error");
             expect(error.message).to.be.an("string");
@@ -9,8 +15,8 @@ var test = function (done) {
             done();
         };
     },
-    pathTests = function (testFunction) {
-        var funct;
+    pathTests = function (testFunction: any) {
+        let funct: any;
 
         beforeEach(function () {
             funct = testFunction();
@@ -36,8 +42,8 @@ var test = function (done) {
             funct("foo", {}, false, test(done));
         });
     },
-    bufferTests = function (testFunction) {
-        var funct;
+    bufferTests = function (testFunction: any) {
+        let funct: any;
 
         beforeEach(function () {
             funct = testFunction();
@@ -67,25 +73,25 @@ var test = function (done) {
 describe("when passed incorrect parameters", function () {
     describe("fromFileWithPath", function () {
         pathTests(function () {
-            return global.fromFileWithPath;
-        }, false);
+            return fromFileWithPath;
+        });
     });
 
     describe("fromFileWithMimeAndPath", function () {
         pathTests(function () {
-            return global.fromFileWithMimeAndPath;
-        }, false);
+            return fromFileWithMimeAndPath;
+        });
     });
 
     describe("fromBufferWithName", function () {
         bufferTests(function () {
-            return global.fromBufferWithName;
-        }, false);
+            return fromBufferWithName;
+        });
     });
 
     describe("fromBufferWithMime", function () {
         bufferTests(function () {
-            return global.fromBufferWithMime;
-        }, false);
+            return fromBufferWithMime;
+        });
     });
 });

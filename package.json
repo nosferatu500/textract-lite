@@ -1,8 +1,8 @@
 {
   "name": "@nosferatu500/textract-lite",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "homepage": "https://github.com/nosferatu500/textract-lite",
-  "description": "Extracting text from files of various type including html, pdf, doc, docx, xls, xlsx, csv, pptx, png, jpg, gif, rtf, text/*, and various open office.",
+  "description": "Extracting text from files of various type including txt, doc, docx.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "author": "David Bashford <dbashford@hotmail.com>",

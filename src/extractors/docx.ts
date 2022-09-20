@@ -1,7 +1,7 @@
 import xpath from "xpath";
 import { DOMParser } from "@xmldom/xmldom";
 import yauzl from "yauzl";
-import { yauzlError, getTextFromZipFile } from "../utils";
+import { yauzlError, getTextFromZipFile, cleanseText } from "../utils";
 
 const includeRegex = /.xml$/;
 const excludeRegex = /^(word\/media\/|word\/_rels\/)/;
@@ -29,47 +29,48 @@ function _calculateExtractedText(inText: any, preserveLineBreaks: any) {
     return text;
 }
 
-function extractText(filePath: string, options: any, cb: any) {
+async function extractText(filePath: string, options: any): Promise<string> {
     let result = "";
-
-    yauzl.open(filePath, function (err: any, zipfile: any) {
-        let processedEntries = 0;
-        if (err) {
-            yauzlError(err, cb);
-            return;
-        }
-
-        const processEnd = function () {
-            let text;
-            if (zipfile.entryCount === ++processedEntries) {
-                if (result.length > 0) {
-                    text = _calculateExtractedText(result, options.preserveLineBreaks);
-                    cb(null, text);
-                } else {
-                    cb(
-                        new Error(
-                            "Extraction could not find content in file, are you" +
-                            " sure it is the mime type it says it is?"
-                        ),
-                        null
-                    );
+    return new Promise((resolve, reject) => {
+        yauzl.open(filePath, function (err: any, zipfile: any) {
+            let processedEntries = 0;
+            if (err) {
+                yauzlError(err, resolve);
+                return;
+            }
+    
+            const processEnd = function () {
+                let text;
+                if (zipfile.entryCount === ++processedEntries) {
+                    if (result.length > 0) {
+                        text = _calculateExtractedText(result, options.preserveLineBreaks);
+                        text = cleanseText(options, text);
+                        resolve(text);
+                    } else {
+                        reject(
+                            new Error(
+                                "Extraction could not find content in file, are you" +
+                                " sure it is the mime type it says it is?"
+                            )
+                        );
+                    }
                 }
-            }
-        };
-
-        zipfile.on("entry", function (entry: any) {
-            if (includeRegex.test(entry.fileName) && !excludeRegex.test(entry.fileName)) {
-                getTextFromZipFile(zipfile, entry, function (_: any, text: any) {
-                    result += `${text}\n`;
+            };
+    
+            zipfile.on("entry", function (entry: any) {
+                if (includeRegex.test(entry.fileName) && !excludeRegex.test(entry.fileName)) {
+                    getTextFromZipFile(zipfile, entry, function (_: any, text: any) {
+                        result += `${text}\n`;
+                        processEnd();
+                    });
+                } else {
                     processEnd();
-                });
-            } else {
-                processEnd();
-            }
-        });
-
-        zipfile.on("error", function (err3: any) {
-            cb(err3);
+                }
+            });
+    
+            zipfile.on("error", function (err3: any) {
+                reject(err3);
+            });
         });
     });
 }

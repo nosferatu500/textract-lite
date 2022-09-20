@@ -18,15 +18,12 @@ const test = function (_testFunction: any, withMime: boolean) {
     });
 
     const _test = function (ext: string, name: string, _text: string) {
-        it(`will ${ext} files`, function (done) {
+        it(`will ${ext} files`, async () => {
             const docPath = path.join(__dirname, "files", name);
             const textBuff = fs.readFileSync(docPath);
 
-            testFunction(withMime ? mime.getType(docPath) : docPath, textBuff, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text.slice(0, 100)).to.eql(_text);
-                done();
-            });
+            const text = await testFunction(withMime ? mime.getType(docPath) : docPath, textBuff, {});
+            expect(text.slice(0, 100)).to.eql(_text);
         });
     };
 

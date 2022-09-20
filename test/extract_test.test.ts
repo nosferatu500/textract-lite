@@ -7,143 +7,104 @@ import { fromFileWithPath } from "../src";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe("textract", function () {
-    describe("for .docx files", function () {
-        it("will extract text from actual docx files", function (done) {
+describe("textract", () => {
+    describe("for .docx files", () => {
+        it("will extract text from actual docx files", async () => {
             const filePath = path.join(__dirname, "files", "docx.docx");
-            fromFileWithPath(filePath, {}, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text).to.be.a("string");
-                expect(text.substring(0, 20)).to.eql("This is a test Just ");
-                done();
-            });
+            const text = await fromFileWithPath(filePath, {});
+            expect(text).to.be.a("string");
+            expect((text as string).substring(0, 20)).to.eql("This is a test Just ");
         });
 
-        it("will extract text from actual docx files and preserve line breaks", function (done) {
+        it("will extract text from actual docx files and preserve line breaks", async () => {
             const filePath = path.join(__dirname, "files", "docx.docx");
-            fromFileWithPath(filePath, { preserveLineBreaks: true }, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text).to.be.a("string");
-                expect(text.substring(20, 40)).to.eql("so you know:\nLorem i");
-                done();
-            });
+            const text = await fromFileWithPath(filePath, { preserveLineBreaks: true });
+            expect(text).to.be.a("string");
+            expect((text as string).substring(20, 40)).to.eql("so you know:\nLorem i");
         });
 
-        it("will extract text from actual docx files and preserve line breaks [line-breaks.docx]", function (done) {
+        it("will extract text from actual docx files and preserve line breaks [line-breaks.docx]", async () => {
             const filePath = path.join(__dirname, "files", "line-breaks.docx");
-            fromFileWithPath(filePath, { preserveLineBreaks: true }, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text).to.be.a("string");
-                expect(text).to.eql("Paragraph follows\n\nLine break follows\n\nend\n\n");
-                done();
-            });
+            const text = await fromFileWithPath(filePath, { preserveLineBreaks: true });
+            expect(text).to.be.a("string");
+            expect((text as string)).to.eql("Paragraph follows\n\nLine break follows\n\nend\n\n");
         });
 
-        it("will error out when docx file isn't actually a docx", function (done) {
+        it("will error out when docx file isn't actually a docx", async () => {
             const filePath = path.join(__dirname, "files", "notadocx.docx");
-            fromFileWithPath(filePath, {}, function (error: any, text: string) {
-                expect(text).to.be.null;
-                expect(error).to.be.an("error");
-                expect(error.message).to.be.a("string");
-                expect(error.message.substring(0, 34)).to.eql("File not correctly recognized as z");
-                done();
-            });
+            const error = await fromFileWithPath(filePath, {});
+            expect(error).to.be.an("error");
+            expect((error as Error).message).to.be.a("string");
+            expect((error as Error).message.substring(0, 34)).to.eql("File not correctly recognized as z");
         });
 
-        it("will not extract smashed together text", function (done) {
+        it("will not extract smashed together text", async () => {
             const filePath = path.join(__dirname, "files", "testresume.docx");
-            fromFileWithPath(filePath, {}, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text).to.be.a("string");
-                expect(text.substring(0, 31)).to.eql("Karol Miner 336 W. Chugalug Way");
-                done();
-            });
+            const text = await fromFileWithPath(filePath, {});
+            expect(text).to.be.a("string");
+            expect((text as string).substring(0, 31)).to.eql("Karol Miner 336 W. Chugalug Way");
         });
 
-        it("can handle funky formatting", function (done) {
+        it("can handle funky formatting", async () => {
             const filePath = path.join(__dirname, "files", "Untitleddocument.docx");
-            fromFileWithPath(filePath, {}, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text).to.be.a("string");
-                expect(text).to.eql("this is a test document that won't be extracted properly. ");
-                done();
-            });
+            const text = await fromFileWithPath(filePath, {});
+            expect(text).to.be.a("string");
+            expect(text).to.eql("this is a test document that won't be extracted properly. ");
         });
 
-        it("can handle a huge docx", function (done) {
+        it("can handle a huge docx", async () => {
             const filePath = path.join(__dirname, "files", "LargeLorem.docx");
-            fromFileWithPath(filePath, {}, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text).to.be.a("string");
-                expect(text.substring(0, 100)).to.eql(
-                    "Hashtag chambray XOXO PBR&B chia small batch. Before they sold out banh mi raw denim, fap synth hell"
-                );
-                done();
-            });
+            const text = await fromFileWithPath(filePath, {});
+            expect(text).to.be.a("string");
+            expect((text as string).substring(0, 100)).to.eql(
+                "Hashtag chambray XOXO PBR&B chia small batch. Before they sold out banh mi raw denim, fap synth hell"
+            );
         });
 
-        it("can handle arabic", function (done) {
+        it("can handle arabic", async () => {
             const filePath = path.join(__dirname, "files", "arabic.docx");
-            fromFileWithPath(filePath, {}, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text).to.be.a("string");
-                expect(text.substring(0, 100)).to.eql(
-                    " التعرف الضوئي على الحروف إشعار عدم التمييز (المصدر: مكتب الصحة والخدمات الإنسانية من أجل الحقوق الم"
-                );
-                done();
-            });
+            const text = await fromFileWithPath(filePath, {});
+            expect(text).to.be.a("string");
+            expect((text as string).substring(0, 100)).to.eql(
+                " التعرف الضوئي على الحروف إشعار عدم التمييز (المصدر: مكتب الصحة والخدمات الإنسانية من أجل الحقوق الم"
+            );
         });
     });
 
     describe("for text/* files", function () {
-        it("will extract text from specifically a .txt file", function (done) {
+        it("will extract text from specifically a .txt file", async () => {
             const filePath = path.join(__dirname, "files", "txt.txt");
-            fromFileWithPath(filePath, {}, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text).to.be.a("string");
-                expect(text).to.eql("This is a plain old text file.");
-                done();
-            });
+            const text = await fromFileWithPath(filePath, {});
+            expect(text).to.be.a("string");
+            expect(text).to.eql("This is a plain old text file.");
         });
 
-        it("will extract text from specifically a non utf8 .txt file", function (done) {
+        it("will extract text from specifically a non utf8 .txt file", async () => {
             const filePath = path.join(__dirname, "files", "non-utf8.txt");
-            fromFileWithPath(filePath, {}, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text).to.be.a("string");
-                expect(text).to.eql("これは非UTF8 テキストファイルです ");
-                done();
-            });
+            const text = await fromFileWithPath(filePath, {});
+            expect(text).to.be.a("string");
+            expect(text).to.eql("これは非UTF8 テキストファイルです ");
         });
 
-        it("will error when .txt file encoding cannot be detected", function (done) {
+        it("will error when .txt file encoding cannot be detected", async () => {
             const filePath = path.join(__dirname, "files", "unknown-encoding.txt");
-            fromFileWithPath(filePath, {}, function (error: any) {
-                expect(error).to.be.an("error");
-                expect(error.message).to.be.a("string");
-                expect(error.message).to.eql("Could not detect encoding for file named [[ unknown-encoding.txt ]]");
-                done();
-            });
+            const error = await fromFileWithPath(filePath, {});
+            expect((error as Error).message).to.be.a("string");
+            expect((error as Error).message).to.eql("Could not detect encoding for file named [[ unknown-encoding.txt ]]");
         });
 
-        it("will remove extraneous white space from a .txt file", function (done) {
+        it("will remove extraneous white space from a .txt file", async () => {
             const filePath = path.join(__dirname, "files", "spacey.txt");
-            fromFileWithPath(filePath, {}, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text).to.be.a("string");
-                expect(text).to.eql("this has lots of space");
-                done();
-            });
+            const text = await fromFileWithPath(filePath, {});
+            expect(text).to.be.a("string");
+            expect(text).to.eql("this has lots of space");
         });
 
-        it("will not remove fancy quotes from a .txt file", function (done) {
+        it("will not remove fancy quotes from a .txt file", async () => {
             const filePath = path.join(__dirname, "files", "fancyquote.txt");
-            fromFileWithPath(filePath, {}, function (error: unknown, text: string) {
-                expect(error).to.be.null;
-                expect(text).to.be.a("string");
-                expect(text).to.eql('this has "fancy" quotes');
-                done();
-            });
+            const text = await fromFileWithPath(filePath, {});
+            expect(text).to.be.a("string");
+            expect(text).to.eql('this has "fancy" quotes');
         });
     });
 });

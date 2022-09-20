@@ -1,0 +1,185 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@nosferatu500/textract-lite</title><meta name="description" content="Documentation for @nosferatu500/textract-lite"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base=".">
+<div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@nosferatu500/textract-lite</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-8 col-content">
+<div class="tsd-page-title">
+<h2>@nosferatu500/textract-lite</h2></div>
+<div class="tsd-panel tsd-typography">
+<a href="#textract-lite" id="textract-lite" style="color: inherit; text-decoration: none;">
+  <h1>textract-lite</h1>
+</a>
+<p>A text extraction node module.</p>
+
+<a href="#currently-extracts" id="currently-extracts" style="color: inherit; text-decoration: none;">
+  <h2>Currently Extracts...</h2>
+</a>
+<ul>
+<li>DOCX</li>
+<li>TXT.</li>
+</ul>
+<p>In almost all cases above, what textract cares about is the mime type.  So <code>.html</code> and <code>.htm</code>, both possessing the same mime type, will be extracted.  Other extensions that share mime types with those above should also extract successfully. For example, <code>application/vnd.ms-excel</code> is the mime type for <code>.xls</code>, but also for 5 other file types.</p>
+<p><em>Does textract not extract from files of the type you need?</em>  Add an issue or submit a pull request. It many cases textract is already capable, it is just not paying attention to the mime type you may be interested in.</p>
+
+<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+  <h2>Install</h2>
+</a>
+<pre><code><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">i</span><span class="hl-1"> @</span><span class="hl-0">nosferatu500</span><span class="hl-1">/</span><span class="hl-0">textract</span><span class="hl-1">-</span><span class="hl-0">lite</span>
+</code></pre>
+
+<a href="#extraction-requirements" id="extraction-requirements" style="color: inherit; text-decoration: none;">
+  <h2>Extraction Requirements</h2>
+</a>
+<p>Note, if any of the requirements below are missing, textract will run and extract all files for types it is capable.  Not having these items installed does not prevent you from using textract, it just prevents you from extracting those specific files.</p>
+
+<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+  <h2>Configuration</h2>
+</a>
+<p>Configuration can be passed into textract.  The following configuration options are available</p>
+<ul>
+<li><code>preserveLineBreaks</code>: When using the command line this is set to <code>true</code> to preserve stdout readability. When using the library via node this is set to <code>false</code>. Pass this in as <code>true</code> and textract will not strip any line breaks.</li>
+<li><code>preserveOnlyMultipleLineBreaks</code>: Some extractors, like PDF, insert line breaks at the end of every line, even if the middle of a sentence. If this option (default <code>false</code>) is set to <code>true</code>, then any instances of a single line break are removed but multiple line breaks are preserved. Check your output with this option, though, this doesn&#39;t preserve paragraphs unless there are multiple breaks.</li>
+<li><code>exec</code>: Some extractors (dxf) use node&#39;s <code>exec</code> functionality. This setting allows for providing <a href="http://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback">config to <code>exec</code> execution</a>. One reason you might want to provide this config is if you are dealing with very large files. You might want to increase the <code>exec</code> <code>maxBuffer</code> setting.</li>
+<li><code>[ext].exec</code>: Each extractor can take specific exec config. Keep in mind many extractors are responsible for extracting multiple types, so, for instance, the <code>odt</code> extractor is what you would configure for <code>odt</code> and <code>odg</code>/<code>odt</code> etc.  Check <a href="https://github.com/dbashford/textract/tree/master/lib/extractors">the extractors</a> to see which you want to specifically configure. At the bottom of each is a list of <code>types</code> for which the extractor is responsible.</li>
+<li><code>tesseract.lang</code>: A pass-through to tesseract allowing for setting of language for extraction. ex: <code>{ tesseract: { lang:&quot;chi_sim&quot; } }</code></li>
+<li><code>tesseract.cmd</code>: <code>tesseract.lang</code> allows a quick means to provide the most popular tesseract option, but if you need to configure more options, you can simply pass <code>cmd</code>. <code>cmd</code> is the string that matches the command-line options you want to pass to tesseract. For instance, to provide language and <code>psm</code>, you would pass <code>{ tesseract: { cmd:&quot;-l chi_sim -psm 10&quot; } }</code></li>
+<li><code>pdftotextOptions</code>: This is a proxy options object to the library textract uses for pdf extraction: <a href="https://github.com/nisaacson/pdf-text-extract">pdf-text-extract</a>. Options include <code>ownerPassword</code>, <code>userPassword</code> if you are extracting text from password protected PDFs. IMPORTANT: textract modifies the pdf-text-extract <code>layout</code> default so that, instead of <code>layout: layout</code>, it uses <code>layout:raw</code>. It is not suggested you modify this without understanding what trouble that might get you in. See <a href="https://github.com/dbashford/textract/issues/75">this GH issue</a> for why textract overrides that library&#39;s default.</li>
+<li><code>typeOverride</code>: Used with <code>fromUrl</code>, if set, rather than using the <code>content-type</code> from the URL request, will use the provided <code>typeOverride</code>.</li>
+<li><code>includeAltText</code>: When extracting HTML, whether or not to include <code>alt</code> text with the extracted text. By default this is <code>false</code>.</li>
+<li><code>allowHeaderAndFooter</code>: This option includes the extraction of content from header and footer in .odt files. By default this is <code>false</code>.</li>
+</ul>
+<p>To use this configuration at the command line, prefix each open with a <code>--</code>.</p>
+<p>Ex: <code>textract image.png --tesseract.lang=deu</code></p>
+
+<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+  <h2>Usage</h2>
+</a>
+
+<a href="#commmand-line" id="commmand-line" style="color: inherit; text-decoration: none;">
+  <h3>Commmand Line</h3>
+</a>
+<p>If textract is installed gloablly, via <code>npm install -g textract</code>, then the following command will write the extracted text to the console for a file on the file system.</p>
+<pre><code><span class="hl-0">$</span><span class="hl-1"> </span><span class="hl-0">textract</span><span class="hl-1"> </span><span class="hl-0">pathToFile</span>
+</code></pre>
+
+<a href="#flags" id="flags" style="color: inherit; text-decoration: none;">
+  <h4>Flags</h4>
+</a>
+<p>Configuration flags can be passed into textract via the command line.</p>
+<pre><code><span class="hl-0">textract</span><span class="hl-1"> </span><span class="hl-0">pathToFile</span><span class="hl-1"> --</span><span class="hl-0">preserveLineBreaks</span><span class="hl-1"> </span><span class="hl-2">false</span>
+</code></pre>
+<p>Parameters like <code>exec.maxBuffer</code> can be passed as you&#39;d expect.</p>
+<pre><code><span class="hl-0">textract</span><span class="hl-1"> </span><span class="hl-0">pathToFile</span><span class="hl-1"> --</span><span class="hl-0">exec</span><span class="hl-1">.</span><span class="hl-0">maxBuffer</span><span class="hl-1"> </span><span class="hl-3">500000</span>
+</code></pre>
+<p>And multiple flags can be used together.</p>
+<pre><code><span class="hl-0">textract</span><span class="hl-1"> </span><span class="hl-0">pathToFile</span><span class="hl-1"> --</span><span class="hl-0">preserveLineBreaks</span><span class="hl-1"> </span><span class="hl-2">false</span><span class="hl-1"> --</span><span class="hl-0">exec</span><span class="hl-1">.</span><span class="hl-0">maxBuffer</span><span class="hl-1"> </span><span class="hl-3">500000</span>
+</code></pre>
+
+<a href="#node" id="node" style="color: inherit; text-decoration: none;">
+  <h3>Node</h3>
+</a>
+
+<a href="#import" id="import" style="color: inherit; text-decoration: none;">
+  <h4>Import</h4>
+</a>
+<pre><code class="language-javascript"><span class="hl-2">var</span><span class="hl-1"> </span><span class="hl-0">textract</span><span class="hl-1"> = </span><span class="hl-4">require</span><span class="hl-1">(</span><span class="hl-5">&#39;textract&#39;</span><span class="hl-1">);</span>
+</code></pre>
+
+<a href="#apis" id="apis" style="color: inherit; text-decoration: none;">
+  <h4>APIs</h4>
+</a>
+<p>There are several ways to extract text.  For all methods, the extracted text and an error object are passed to a callback.</p>
+<p><code>error</code> will contain informative text about why the extraction failed. If textract does not currently extract files of the type provided, a <code>typeNotFound</code> flag will be tossed on the error object.</p>
+
+<a href="#file" id="file" style="color: inherit; text-decoration: none;">
+  <h5>File</h5>
+</a>
+<pre><code class="language-javascript"><span class="hl-0">textract</span><span class="hl-1">.</span><span class="hl-4">fromFileWithPath</span><span class="hl-1">(</span><span class="hl-0">filePath</span><span class="hl-1">, </span><span class="hl-2">function</span><span class="hl-1">( </span><span class="hl-0">error</span><span class="hl-1">, </span><span class="hl-0">text</span><span class="hl-1"> ) {})</span>
+</code></pre>
+<pre><code class="language-javascript"><span class="hl-0">textract</span><span class="hl-1">.</span><span class="hl-4">fromFileWithPath</span><span class="hl-1">(</span><span class="hl-0">filePath</span><span class="hl-1">, </span><span class="hl-0">config</span><span class="hl-1">, </span><span class="hl-2">function</span><span class="hl-1">( </span><span class="hl-0">error</span><span class="hl-1">, </span><span class="hl-0">text</span><span class="hl-1"> ) {})</span>
+</code></pre>
+
+<a href="#file--mime-type" id="file--mime-type" style="color: inherit; text-decoration: none;">
+  <h5>File + mime type</h5>
+</a>
+<pre><code class="language-javascript"><span class="hl-0">textract</span><span class="hl-1">.</span><span class="hl-4">fromFileWithMimeAndPath</span><span class="hl-1">(</span><span class="hl-0">type</span><span class="hl-1">, </span><span class="hl-0">filePath</span><span class="hl-1">, </span><span class="hl-2">function</span><span class="hl-1">( </span><span class="hl-0">error</span><span class="hl-1">, </span><span class="hl-0">text</span><span class="hl-1"> ) {})</span>
+</code></pre>
+<pre><code class="language-javascript"><span class="hl-0">textract</span><span class="hl-1">.</span><span class="hl-4">fromFileWithMimeAndPath</span><span class="hl-1">(</span><span class="hl-0">type</span><span class="hl-1">, </span><span class="hl-0">filePath</span><span class="hl-1">, </span><span class="hl-0">config</span><span class="hl-1">, </span><span class="hl-2">function</span><span class="hl-1">( </span><span class="hl-0">error</span><span class="hl-1">, </span><span class="hl-0">text</span><span class="hl-1"> ) {})</span>
+</code></pre>
+
+<a href="#buffer--mime-type" id="buffer--mime-type" style="color: inherit; text-decoration: none;">
+  <h5>Buffer + mime type</h5>
+</a>
+<pre><code class="language-javascript"><span class="hl-0">textract</span><span class="hl-1">.</span><span class="hl-4">fromBufferWithMime</span><span class="hl-1">(</span><span class="hl-0">type</span><span class="hl-1">, </span><span class="hl-0">buffer</span><span class="hl-1">, </span><span class="hl-2">function</span><span class="hl-1">( </span><span class="hl-0">error</span><span class="hl-1">, </span><span class="hl-0">text</span><span class="hl-1"> ) {})</span>
+</code></pre>
+<pre><code class="language-javascript"><span class="hl-0">textract</span><span class="hl-1">.</span><span class="hl-4">fromBufferWithMime</span><span class="hl-1">(</span><span class="hl-0">type</span><span class="hl-1">, </span><span class="hl-0">buffer</span><span class="hl-1">, </span><span class="hl-0">config</span><span class="hl-1">, </span><span class="hl-2">function</span><span class="hl-1">( </span><span class="hl-0">error</span><span class="hl-1">, </span><span class="hl-0">text</span><span class="hl-1"> ) {})</span>
+</code></pre>
+
+<a href="#buffer--file-namepath" id="buffer--file-namepath" style="color: inherit; text-decoration: none;">
+  <h5>Buffer + file name/path</h5>
+</a>
+<pre><code class="language-javascript"><span class="hl-0">textract</span><span class="hl-1">.</span><span class="hl-4">fromBufferWithName</span><span class="hl-1">(</span><span class="hl-0">name</span><span class="hl-1">, </span><span class="hl-0">buffer</span><span class="hl-1">, </span><span class="hl-2">function</span><span class="hl-1">( </span><span class="hl-0">error</span><span class="hl-1">, </span><span class="hl-0">text</span><span class="hl-1"> ) {})</span>
+</code></pre>
+<pre><code class="language-javascript"><span class="hl-0">textract</span><span class="hl-1">.</span><span class="hl-4">fromBufferWithName</span><span class="hl-1">(</span><span class="hl-0">name</span><span class="hl-1">, </span><span class="hl-0">buffer</span><span class="hl-1">, </span><span class="hl-0">config</span><span class="hl-1">, </span><span class="hl-2">function</span><span class="hl-1">( </span><span class="hl-0">error</span><span class="hl-1">, </span><span class="hl-0">text</span><span class="hl-1"> ) {})</span>
+</code></pre>
+
+<a href="#url" id="url" style="color: inherit; text-decoration: none;">
+  <h5>URL</h5>
+</a>
+<p>When passing a URL, the URL can either be a string, or a <a href="https://nodejs.org/api/url.html">node.js URL object</a>. Using the URL object allows fine grained control over the URL being used.</p>
+<pre><code class="language-javascript"><span class="hl-0">textract</span><span class="hl-1">.</span><span class="hl-4">fromUrl</span><span class="hl-1">(</span><span class="hl-0">url</span><span class="hl-1">, </span><span class="hl-2">function</span><span class="hl-1">( </span><span class="hl-0">error</span><span class="hl-1">, </span><span class="hl-0">text</span><span class="hl-1"> ) {})</span>
+</code></pre>
+<pre><code class="language-javascript"><span class="hl-0">textract</span><span class="hl-1">.</span><span class="hl-4">fromUrl</span><span class="hl-1">(</span><span class="hl-0">url</span><span class="hl-1">, </span><span class="hl-0">config</span><span class="hl-1">, </span><span class="hl-2">function</span><span class="hl-1">( </span><span class="hl-0">error</span><span class="hl-1">, </span><span class="hl-0">text</span><span class="hl-1"> ) {})</span>
+</code></pre>
+
+<a href="#testing-notes" id="testing-notes" style="color: inherit; text-decoration: none;">
+  <h2>Testing Notes</h2>
+</a>
+
+<a href="#running-tests-on-a-mac" id="running-tests-on-a-mac" style="color: inherit; text-decoration: none;">
+  <h3>Running Tests on a Mac?</h3>
+</a>
+<ul>
+<li><code>sudo port install tesseract-chi-sim</code></li>
+<li><code>sudo port install tesseract-eng</code></li>
+<li>You will also want to disable textract&#39;s usage of textutil as the tests are based on output from antiword.<ul>
+<li>Go into <code>/lib/extractors/{doc|doc-osx|rtf}</code> and modify the code under <code>if ( os.platform() === &#39;darwin&#39; ) {</code>. Uncommented the commented lines in these sections.</li>
+</ul>
+</li>
+</ul>
+</div></div>
+<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<nav class="tsd-navigation primary">
+<details class="tsd-index-accordion" open><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Modules</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li class="current selected"><a href="modules.html">@nosferatu500/textract-<wbr/>lite</a>
+<ul></ul></li></ul></div></details></nav>
+<nav class="tsd-navigation secondary menu-sticky">
+<ul>
+<li class="tsd-kind-function"><a href="functions/fromBufferWithMime.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-function)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-64-path"></rect><path d="M9.39 16V7.24H14.55V8.224H10.446V11.128H14.238V12.112H10.47V16H9.39Z" fill="var(--color-text)" id="icon-64-text"></path></svg>from<wbr/>Buffer<wbr/>With<wbr/>Mime</a></li>
+<li class="tsd-kind-function"><a href="functions/fromBufferWithName.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>from<wbr/>Buffer<wbr/>With<wbr/>Name</a></li>
+<li class="tsd-kind-function"><a href="functions/fromFileWithMimeAndPath.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>from<wbr/>File<wbr/>With<wbr/>Mime<wbr/>And<wbr/>Path</a></li>
+<li class="tsd-kind-function"><a href="functions/fromFileWithPath.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>from<wbr/>File<wbr/>With<wbr/>Path</a></li></ul></nav></div></div>
+<div class="container tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div><script src="assets/main.js"></script></body></html>

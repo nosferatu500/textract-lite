@@ -28,7 +28,7 @@
     "build": "yarn clean && tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@xmldom/xmldom": "0.8.2",
+    "@xmldom/xmldom": "0.8.4",
     "html-entities": "^2.3.3",
     "iconv-lite": "^0.6.3",
     "jschardet": "^3.0.0",

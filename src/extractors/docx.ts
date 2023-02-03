@@ -6,9 +6,11 @@ import { yauzlError, getTextFromZipFile, cleanseText } from "../utils";
 const includeRegex = /.xml$/;
 const excludeRegex = /^(word\/media\/|word\/_rels\/)/;
 
-function _calculateExtractedText(inText: any, preserveLineBreaks: any) {
+function _calculateExtractedText(inText: string, preserveLineBreaks: any) {
+    // Security workaround for xmldom >= v0.8.4
+    inText = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + '<Properties>' + inText + '</Properties>';
     const doc = new DOMParser().parseFromString(inText);
-    const ps: any = xpath.select("//*[local-name()='p']", doc);
+    const ps = xpath.select("//*[local-name()='p']", doc);
     let text = "";
     for (let paragraph of ps) {
         let localText = "";
@@ -60,7 +62,8 @@ async function extractText(filePath: string, options: any): Promise<string> {
             zipfile.on("entry", function (entry: any) {
                 if (includeRegex.test(entry.fileName) && !excludeRegex.test(entry.fileName)) {
                     getTextFromZipFile(zipfile, entry, function (_: any, text: any) {
-                        result += `${text}\n`;
+                        // Security workaround for xmldom >= v0.8.4
+                        result += `${text}\n`.replace('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n', '');
                         processEnd();
                     });
                 } else {

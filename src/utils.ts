@@ -23,7 +23,7 @@ if (!fs.existsSync(outDir)) {
 }
 
 // replace nasty quotes with simple ones
-export function replaceBadCharacters(text: string) {
+function replaceBadCharacters(text: string) {
     let i;
     let repl: any;
     for (i = 0; i < rLen; i++) {

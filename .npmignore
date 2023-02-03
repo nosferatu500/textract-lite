@@ -24,3 +24,5 @@ README.md
 CHANGELOG.md
 .eslintrc.json
 .editorconfig
+.eslintcache
+log.txt

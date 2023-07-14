@@ -10,6 +10,6 @@ export async function fromFileWithMimeAndPath(type: string, filePath: string, op
 }
 
 export async function fromFileWithPath(filePath: string, options: any): Promise<string | Error> {
-    const type = (options && options.typeOverride) || mime.getType(filePath);
+    const type = (options?.typeOverride) || mime.getType(filePath);
     return fromFileWithMimeAndPath(type, filePath, options);
 }

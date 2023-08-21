@@ -1,6 +1,6 @@
 {
   "name": "@nosferatu500/textract-lite",
-  "version": "5.0.9",
+  "version": "5.0.10",
   "homepage": "https://github.com/nosferatu500/textract-lite",
   "description": "Extracting text from files of various type including txt, doc, docx.",
   "main": "./dist/index.js",
@@ -27,12 +27,12 @@
     "build": "yarn clean && tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@xmldom/xmldom": "^0.8.9",
+    "@xmldom/xmldom": "^0.8.10",
     "html-entities": "^2.4.0",
     "iconv-lite": "^0.6.3",
     "jschardet": "^3.0.0",
     "mime": "^3.0.0",
-    "xpath": "^0.0.32",
+    "xpath": "^0.0.33",
     "yauzl": "^2.10.0"
   },
   "devDependencies": {
@@ -40,13 +40,13 @@
     "@types/chai-as-promised": "^7.1.5",
     "@types/mime": "^3.0.1",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^16.18.38",
+    "@types/node": "^16.18.41",
     "@types/yauzl": "^2.10.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "@typescript-eslint/parser": "^6.4.0",
     "chai": "^4.3.7",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^8.44.0",
+    "eslint": "^8.47.0",
     "mocha": "^10.2.0",
     "ts-node": "^10.9.1",
     "typedoc": "^0.24.8",

@@ -12,7 +12,8 @@ function _calculateExtractedText(inText: string, preserveLineBreaks: any) {
     const doc = new DOMParser().parseFromString(inText);
     const ps = xpath.select("//*[local-name()='p']", doc);
     let text = "";
-    for (let paragraph of ps) {
+
+    for (let paragraph of ps as any) {
         let localText = "";
         paragraph = new DOMParser().parseFromString(paragraph.toString());
         const ts = xpath.select("//*[local-name()='t' or local-name()='tab' or local-name()='br']", paragraph) as any;

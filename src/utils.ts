@@ -5,9 +5,9 @@ import path from "path";
 
 const STRIP_ONLY_SINGLE_LINEBREAKS = /(^|[^\n])\n(?!\n)/g;
 const WHITELIST_PRESERVE_LINEBREAKS =
-    /[^\d\n\r !"#$%&'-\w'()-_`a-z{|}~\u0080-\u1FFF\u2013–\u2014\u2015\u2018\u2019\u201C\u201D„\u2026\u20AC\u2116\u2C00-\uD7FF\uFB50\uFDFF\uFE70\uFEFF\uFF01-\uFFE6]*/g;
+    /[^\d\n\r !"#$%&'-\w'()-_`a-z{|}~\u0080-\u1FFF\u007C\u2013–\u2014\u2015\u2018\u2019\u201C\u201D„\u2026\u20AC\u2116\u2C00-\uD7FF\uFB50\uFDFF\uFE70\uFEFF\uFF01-\uFFE6]*/g;
 const WHITELIST_STRIP_LINEBREAKS =
-    /[^\d !"#$%&'-\w'()-_`a-z{|}~\u0080-\u1FFF\u2013–\u2014\u2015\u2018\u2019\u201C\u201D„\u2026\u20AC\u2116\u2C00-\uD7FF\uFB50\uFDFF\uFE70\uFEFF\uFF01-\uFFE6]*/g;
+    /[^\d !"#$%&'-\w'()-_`a-z{|}~\u0080-\u1FFF\u007C\u2013–\u2014\u2015\u2018\u2019\u201C\u201D„\u2026\u20AC\u2116\u2C00-\uD7FF\uFB50\uFDFF\uFE70\uFEFF\uFF01-\uFFE6]*/g;
 
 const outDir = path.join(os.tmpdir(), "textract");
 const replacements = [

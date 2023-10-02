@@ -74,9 +74,9 @@ describe("textract", () => {
     describe("for text/* files", function () {
         it("will extract text from specifically a .txt file", async () => {
             const filePath = path.join(__dirname, "files", "txt.txt");
-            const text = await fromFileWithPath(filePath, {});
+            const text = await fromFileWithPath(filePath, {preserveLineBreaks: true});
             expect(text).to.be.a("string");
-            expect(text).to.eql("This is a plain old text file.");
+            expect(text).to.eql("This is a plain old text file. ||");
         });
 
         it("will extract text from specifically a non utf8 .txt file", async () => {

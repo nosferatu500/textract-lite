@@ -1,12 +1,15 @@
 import fs from "fs";
 import path from "path";
 
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const extractorPath = path.join(__dirname, "extractors");
 const typeExtractors: any = {};
 const regexExtractors: any[] = [];
-const failedExtractorTypes: any = {};
 let totalExtractors = 0;
-let satisfiedExtractors = 0;
 let hasInitialized = false;
 function registerExtractor(extractor: any) {
     if (extractor.types) {
@@ -21,45 +24,22 @@ function registerExtractor(extractor: any) {
     }
 }
 
-function registerFailedExtractor(extractor: any, failedMessage: string) {
-    if (extractor.types) {
-        for (const type of extractor.types) {
-            failedExtractorTypes[type.toLowerCase()] = failedMessage;
-        }
-    }
-}
-
-function testExtractor(extractor: any, options: any) {
-    extractor.test(options, function (passedTest: any, failedMessage: string) {
-        satisfiedExtractors++;
-        if (passedTest) {
-            registerExtractor(extractor.default);
-        } else {
-            registerFailedExtractor(extractor, failedMessage);
-        }
-    });
-}
-
-function initializeExtractors(options: any) {
+async function initializeExtractors() {
     hasInitialized = true;
 
     // discover available extractors
-    const extractors = fs.readdirSync(extractorPath).map(function (item: any) {
+    const extractors = await Promise.all(fs.readdirSync(extractorPath).map(async (item: any) => {
         const fullExtractorPath = path.join(extractorPath, item);
         // get the extractor
-        // eslint-disable-next-line global-require
-        return require(fullExtractorPath);
-    });
+        const { default: extractor } = await import(fullExtractorPath);
+
+        return extractor;
+    }));
 
     // perform any binary tests to ensure extractor is possible
     // given execution environment
     for (const extractor of extractors) {
-        if (extractor.test) {
-            testExtractor(extractor, options);
-        } else {
-            satisfiedExtractors++;
-            registerExtractor(extractor.default);
-        }
+        registerExtractor(extractor);
     }
 
     // need to keep track of how many extractors we have in total
@@ -92,36 +72,18 @@ export async function extract(type: string, filePath: string, options: any): Pro
     let theExtractor;
 
     if (!hasInitialized) {
-        initializeExtractors(options);
+        await initializeExtractors();
     }
 
-    // registration of extractors complete?
-    if (totalExtractors === satisfiedExtractors) {
-        theExtractor = findExtractor(type);
+    theExtractor = findExtractor(type);
 
-        if (theExtractor) {
-            return theExtractor(filePath, options);
-        } else {
-            // cannot extract this file type
-            msg = `Error for type: [[ ${type} ]], file: [[ ${filePath} ]]`;
-
-            // update error message if type is supported but just not configured/installed properly
-            if (failedExtractorTypes[type]) {
-                msg +=
-                    `, extractor for type exists, but failed to initialize.` +
-                    ` Message: ${failedExtractorTypes[type]}`;
-            }
-
-            error = new Error(msg);
-            return error;
-        }
+    if (theExtractor) {
+        return theExtractor(filePath, options);
     } else {
-        // async registration has not wrapped up
-        // try again later
-        setTimeout(function () {
-            extract(type, filePath, options);
-        }, 100);
-    }
+        // cannot extract this file type
+        msg = `Error for type: [[ ${type} ]], file: [[ ${filePath} ]]`;
 
-    return new Error("Something went wrong.")
+        error = new Error(msg);
+        return error;
+    }
 }

@@ -1,11 +1,11 @@
-import { describe } from "mocha";
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { expect } from 'chai';
 import path from "path";
-import { fromFileWithPath } from "../src";
+import { fromFileWithPath } from '../src';
 
-chai.use(chaiAsPromised);
-const expect = chai.expect;
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 describe("textract", () => {
     describe("for .docx files", () => {
@@ -35,7 +35,7 @@ describe("textract", () => {
             const error = await fromFileWithPath(filePath, {});
             expect(error).to.be.an("error");
             expect((error as Error).message).to.be.a("string");
-            expect((error as Error).message.substring(0, 34)).to.eql("File not correctly recognized as z");
+            expect((error as Error).message.substring(0, 34)).to.eql("End of central directory record si");
         });
 
         it("will not extract smashed together text", async () => {

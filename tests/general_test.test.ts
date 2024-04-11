@@ -1,15 +1,15 @@
 import path from "path";
 
-import { describe } from "mocha";
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { expect } from 'chai';
 import { fromFileWithMimeAndPath, fromFileWithPath } from "../src";
 
-chai.use(chaiAsPromised);
-const expect = chai.expect;
+import { fileURLToPath } from "node:url";
 
-describe("textract", function () {
-    it("properties should be functions", function () {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+describe("textract", () => {
+    it("properties should be functions", () => {
         expect(typeof fromFileWithPath).to.eql("function");
         expect(typeof fromFileWithMimeAndPath).to.eql("function");
     });

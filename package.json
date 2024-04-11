@@ -1,11 +1,11 @@
 {
   "name": "@nosferatu500/textract-lite",
-  "version": "7.0.0",
+  "version": "7.0.4",
   "type": "module",
   "homepage": "https://github.com/nosferatu500/textract-lite",
   "description": "Extracting text from files of various type including txt, doc, docx.",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index",
+  "types": "./dist/index.d",
   "author": "David Bashford <dbashford@hotmail.com>",
   "contributors": [
     {
@@ -23,7 +23,7 @@
   "scripts": {
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx --cache",
     "test": "mocha",
-    "clean": "rm -rf dist build package",
+    "clean": "rimraf dist build package",
     "docs": "typedoc --entryPoints src/index.ts",
     "clean-types": "rimraf dist/extractors/docx.d.ts && rimraf dist/extractors/text.d.ts && rimraf dist/extract.d.ts && rimraf dist/utils.d.ts",
     "build": "npm run clean && tsc -p tsconfig.json && npm run clean-types"

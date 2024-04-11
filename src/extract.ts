@@ -9,7 +9,6 @@ const __dirname = path.dirname(__filename);
 const extractorPath = path.join(__dirname, "extractors");
 const typeExtractors: any = {};
 const regexExtractors: any[] = [];
-let totalExtractors = 0;
 let hasInitialized = false;
 function registerExtractor(extractor: any) {
     if (extractor.types) {
@@ -41,9 +40,6 @@ async function initializeExtractors() {
     for (const extractor of extractors) {
         registerExtractor(extractor);
     }
-
-    // need to keep track of how many extractors we have in total
-    totalExtractors = extractors.length;
 }
 
 function findExtractor(type: string) {

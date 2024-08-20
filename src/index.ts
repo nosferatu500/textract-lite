@@ -1,6 +1,6 @@
 import fs from "fs";
 import mime from "mime";
-import { extract } from "./extract";
+import { extract } from "./extract.js";
 
 export async function fromFileWithMimeAndPath(type: string, filePath: string, options: any): Promise<string | Error> {
     if (fs.existsSync(filePath)) {

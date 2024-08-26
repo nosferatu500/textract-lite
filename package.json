@@ -1,6 +1,6 @@
 {
   "name": "@nosferatu500/textract-lite",
-  "version": "7.0.11",
+  "version": "7.0.13",
   "type": "module",
   "homepage": "https://github.com/nosferatu500/textract-lite",
   "description": "Extracting text from files of various type including txt, doc, docx.",

@@ -27,10 +27,10 @@ async function initializeExtractors() {
     hasInitialized = true;
 
     // discover available extractors
-    const extractors = await Promise.all(fs.readdirSync(pathToFileURL(extractorPath)).map(async (item: any) => {
+    const extractors = await Promise.all(fs.readdirSync(extractorPath).map(async (item: any) => {
         const fullExtractorPath = path.join(extractorPath, item);
         // get the extractor
-        const { default: extractor } = await import(fullExtractorPath);
+        const { default: extractor } = await import(pathToFileURL(fullExtractorPath).toString());
 
         return extractor;
     }));

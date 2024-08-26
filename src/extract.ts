@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,7 +27,7 @@ async function initializeExtractors() {
     hasInitialized = true;
 
     // discover available extractors
-    const extractors = await Promise.all(fs.readdirSync(extractorPath).map(async (item: any) => {
+    const extractors = await Promise.all(fs.readdirSync(pathToFileURL(extractorPath)).map(async (item: any) => {
         const fullExtractorPath = path.join(extractorPath, item);
         // get the extractor
         const { default: extractor } = await import(fullExtractorPath);

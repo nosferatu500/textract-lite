@@ -3,10 +3,11 @@ import path from "path";
 import iconv from "iconv-lite";
 import jschardet from "jschardet";
 import { cleanseText } from "../utils.js";
+import { pathToFileURL } from "node:url";
 
 function extractText(filePath: string, options: any): Promise<string | Error> {
     return new Promise((resolve, reject) => {
-        fs.readFile(filePath, function (error, data) {
+        fs.readFile(pathToFileURL(filePath), function (error, data) {
             let encoding;
             let decoded;
             let detectedEncoding;

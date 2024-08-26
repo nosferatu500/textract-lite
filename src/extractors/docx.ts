@@ -1,7 +1,7 @@
 import xpath from "xpath";
 import { DOMParser } from "@xmldom/xmldom";
 import yauzl from "yauzl";
-import { yauzlError, getTextFromZipFile, cleanseText } from "../utils";
+import { yauzlError, getTextFromZipFile, cleanseText } from "../utils.js";
 
 const includeRegex = /.xml$/;
 const excludeRegex = /^(word\/media\/|word\/_rels\/)/;

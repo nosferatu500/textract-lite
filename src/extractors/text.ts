@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import iconv from "iconv-lite";
 import jschardet from "jschardet";
-import { cleanseText } from "../utils";
+import { cleanseText } from "../utils.js";
 
 function extractText(filePath: string, options: any): Promise<string | Error> {
     return new Promise((resolve, reject) => {

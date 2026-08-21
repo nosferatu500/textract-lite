@@ -1,42 +1,34 @@
-import typescriptEslint from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
+import tseslint from "typescript-eslint";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
-
-export default [
+export default tseslint.config(
     {
-        ignores: ['node_modules/**'],
+        ignores: ["dist/**", "docs/**"],
     },
-    ...compat.extends(
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended-type-checked",
-    "plugin:@typescript-eslint/stylistic-type-checked",
-), {
-    plugins: {
-        "@typescript-eslint": typescriptEslint,
-    },
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-        parser: tsParser,
-        ecmaVersion: 5,
-        sourceType: "script",
-
-        parserOptions: {
-            project: true,
+    js.configs.recommended,
+    {
+        files: ["**/*.ts"],
+        extends: [tseslint.configs.recommendedTypeChecked, tseslint.configs.stylisticTypeChecked],
+        languageOptions: {
+            parserOptions: {
+                // The project service replaces an explicit `project` glob: it
+                // asks TypeScript which config owns each file.
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
+            },
         },
     },
-
-    rules: {
-        "@typescript-eslint/no-explicit-any": "off",
+    {
+        // tests/ is deliberately outside tsconfig.json -- Node runs it straight
+        // from source and it is never compiled -- so the project service has no
+        // types for it. Lint it with the syntactic rules only. Type-aware rules
+        // here would additionally need @types/mocha and chai's types.
+        files: ["tests/**/*.ts"],
+        extends: [tseslint.configs.disableTypeChecked],
+        languageOptions: {
+            parserOptions: {
+                projectService: false,
+            },
+        },
     },
-}];
+);

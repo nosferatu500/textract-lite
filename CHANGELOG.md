@@ -19,7 +19,13 @@
 * `module`/`moduleResolution` moved from `ESNext`/`Node` to `NodeNext`. The old `Node` value selected legacy node10 resolution, which does not match how this ESM-only package is actually loaded.
 * Enabled `verbatimModuleSyntax`, `erasableSyntaxOnly`, `noUncheckedIndexedAccess`, `rewriteRelativeImportExtensions` and an explicit `rootDir`.
 * Dropped `ts-node`. Tests now run directly off the TypeScript source through Node's built-in type stripping, so relative imports in `src/` are written as `.ts` and rewritten to `.js` on emit.
-* ESLint's parser was configured with `ecmaVersion: 5` and `sourceType: "script"` — wrong on both counts for this codebase. Now `latest`/`module`. Lint is clean; it previously reported 71 errors.
+* ESLint 9 → 10, and the config rewritten as a native flat config. It previously routed `eslint:recommended` and the `@typescript-eslint` presets through `FlatCompat`, the eslintrc compatibility bridge, and wired up the parser and plugin by hand. It now composes `js.configs.recommended` and the typescript-eslint presets directly via `tseslint.config()`, which drops the `@eslint/eslintrc` dependency and the `fileURLToPath`/`__dirname` boilerplate.
+* Replaced `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` with the unified `typescript-eslint` package.
+* Type-aware linting now uses the project service (`projectService: true`) instead of a `project: true` glob, so TypeScript decides which config owns each file.
+* ESLint's parser had been configured with `ecmaVersion: 5` and `sourceType: "script"` — wrong on both counts for this codebase. Both are now the flat-config defaults and no longer stated explicitly.
+* Dropped the `@typescript-eslint/no-explicit-any: "off"` override. No `any` remains in `src/`, so the rule is enforced.
+* `npm run lint` covers the whole repository rather than just `src/`. `tests/` is linted without the type-aware rules, since it is deliberately outside `tsconfig.json` and the project service therefore has no types for it.
+* Lint reports zero problems; before this release it reported 71 errors.
 
 #### Modernized APIs
 * `import.meta.dirname` replaces the `fileURLToPath(import.meta.url)` + `path.dirname` pair.

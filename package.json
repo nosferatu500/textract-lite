@@ -15,11 +15,16 @@
   "files": [
     "dist"
   ],
-  "author": "David Bashford <dbashford@hotmail.com>",
+  "author": {
+    "name": "Vitalii Shvetsov",
+    "email": "vitalya199529@gmail.com",
+    "url": "https://github.com/nosferatu500"
+  },
   "contributors": [
     {
-      "name": "Vitalii Shvetsov",
-      "email": "vitalya199529@gmail.com"
+      "name": "David Bashford",
+      "email": "dbashford@hotmail.com",
+      "url": "https://github.com/dbashford"
     }
   ],
   "engines": {

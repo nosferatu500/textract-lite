@@ -1,3 +1,67 @@
+### 9.0.0
+* Fixed: `types` pointed at `./dist/index.d`, which is not a real file, so consumers got no type information. It now points at `./dist/index.d.ts`.
+* Added an `exports` map so the package resolves correctly as ESM, with `types` and `default` conditions for the single `.` entry point.
+* Removed the `browserslist` config. It never applied — this is a node-only library.
+* `description` and `keywords` corrected to describe what is actually supported (`.docx` and plain text). `.doc` has not been supported since the fork.
+* README rewritten. It still documented the upstream `textract` CLI, the callback API, the buffer and URL entry points, and `tesseract`/`pdftotext`/`odt` options, none of which exist in this package.
+* LICENSE copyright range extended through 2026.
+
+### 8.0.0
+* Bump node >= 24.11.
+* Bump deps: `iconv-lite` 0.7, `mime` 4.1, `html-entities` 2.6, `yauzl` 3.2, `jschardet` 3.1.4, `@xmldom/xmldom` 0.8.11.
+* Bump dev deps: TypeScript 5.9, ESLint 9.39, `@typescript-eslint` 8.48, chai 6, mocha 11, typedoc 0.28, rimraf 6.1.
+* Dropped `@types/chai` and `@types/mocha`, both packages now ship their own types.
+
+### 7.0.9 - 7.0.13
+* Fixed: unable to load files on Windows. Extractor modules are now imported through `pathToFileURL()` and the `text` extractor reads through a file URL rather than a raw path.
+* Migrated ESLint to flat config (`eslint.config.mjs`, ESLint 9). `.eslintrc.json` removed and the `lint` script no longer passes `--ext`.
+* `clean` script uses `rimraf` instead of `rm -rf` so builds work on Windows.
+* Bump node >= 20.9.
+
+### 7.0.4 - 7.0.8
+* Fixed build issue: internal relative imports now carry the `.js` extension required under ESM (`./extract.js`, `../utils.js`).
+* `tsconfig.json`: target/lib raised to ES2023, added `declarationDir`, `resolveJsonModule` and `isolatedModules`, dropped the self-referential `paths` mapping.
+* `types` entry in `package.json` changed to `./dist/index.d`.
+
+### 7.0.0
+* **Breaking:** the package is now ESM only (`"type": "module"`).
+* Extractor discovery is asynchronous — `require()` was replaced by `await import()`, and `__dirname` is derived from `import.meta.url`.
+* Removed the extractor self-test machinery (`test`/`registerFailedExtractor`/`satisfiedExtractors`) along with the `setTimeout` retry loop in `extract()`. No extractor depends on an external binary any more, so there is nothing to probe and errors no longer mention failed initialization.
+* Tests moved from `test/` to `tests/` and are configured through `.mocharc.json` (`ts-node/esm` loader).
+* Switched from `yarn.lock` to `package-lock.json`.
+
+### 6.0.2
+* Fixed: pipe characters were being mangled during cleansing, so text containing `||` came out as `""`. The fancy double-quote and apostrophe replacement patterns each contained a stray `|` inside their character class.
+
+### 6.0.0
+* Bump node >= 18.
+* Bump deps: TypeScript 5.2, typedoc 0.25, ESLint 8.50, `@typescript-eslint` 6.7.
+
+### 5.0.6 - 5.0.10
+* Bump deps: TypeScript 5.1, `@xmldom/xmldom` 0.8.10, `xpath` 0.0.33, `html-entities` 2.4, `@typescript-eslint` 6, typedoc 0.24.
+* Enabled ESLint caching and regenerated the typedoc output under `docs/`.
+
+### 5.0.5
+* Security workaround for `@xmldom/xmldom` >= 0.8.4. `.docx` XML fragments are now wrapped in a single `<Properties>` root element and the per-entry XML declaration is stripped before parsing, so the parser no longer rejects the multi-root input.
+* `_extractWithType` inlined into `fromFileWithMimeAndPath`, and `replaceBadCharacters` is no longer exported.
+
+### 5.0.4
+* **Breaking:** removed the buffer API, `fromBufferWithMime()` and `fromBufferWithName()`. `fromFileWithPath()` and `fromFileWithMimeAndPath()` are the only entry points.
+* Removed the leftover shell-based helpers from `src/utils.ts` — `createExecOptions`, `unzipCheck` and `runExecIntoFile` — dropping the `child_process` dependency entirely.
+* Pinned `@xmldom/xmldom` to 0.8.2 to work around a parser error.
+
+### 5.0.1 - 5.0.3
+* Bump deps: `@xmldom/xmldom` 0.8.6, TypeScript 4.9, ESLint 8.32, typedoc 0.23.24.
+
+### 5.0.0
+* **Breaking:** callbacks replaced with `async`/`await`. Every exported function now returns `Promise<string | Error>` and no longer accepts a `cb` argument.
+* Removed the argument-shape sniffing and `_returnArgsError` — argument validation is now the type system's job.
+* Text cleansing moved out of `extract()` into `cleanseText()` in `src/utils.ts`, applied by each extractor instead of wrapping the callback.
+* Package description narrowed to reflect what is actually supported: txt, doc, docx.
+
+### 4.0.1
+* Tightened types: `type` parameters are `string` rather than `any`, and the runtime `typeof` guards those types made redundant were removed.
+
 ### 4.0.0
 * Moved on TS.
 * Bump node >= 16

@@ -1,11 +1,20 @@
 {
   "name": "@nosferatu500/textract-lite",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "type": "module",
   "homepage": "https://github.com/nosferatu500/textract-lite",
-  "description": "Extracting text from files of various type including txt, doc, docx.",
+  "description": "Extracting text from .docx and plain text files.",
   "main": "./dist/index.js",
-  "types": "./dist/index.d",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "author": "David Bashford <dbashford@hotmail.com>",
   "contributors": [
     {
@@ -56,24 +65,14 @@
   "publishConfig": {
     "access": "public"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not ie <= 11",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "keywords": [
     "textract-lite",
     "textract",
     "extract",
+    "extraction",
     "docx",
-    "text"
+    "txt",
+    "text",
+    "esm"
   ]
 }

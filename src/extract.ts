@@ -1,85 +1,67 @@
-import fs from "fs";
-import path from "path";
+import { readdir } from "node:fs/promises";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 
-import { fileURLToPath, pathToFileURL } from "node:url";
+import type { ExtractOptions, Extractor, ExtractorModule } from "./types.ts";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const extractorPath = path.join(import.meta.dirname, "extractors");
 
-const extractorPath = path.join(__dirname, "extractors");
-const typeExtractors: any = {};
-const regexExtractors: any[] = [];
-let hasInitialized = false;
-function registerExtractor(extractor: any) {
-    if (extractor.types) {
-        for (let type of extractor.types) {
-            if (typeof type === "string") {
-                type = type.toLowerCase();
-                typeExtractors[type] = extractor.extract;
-            } else if (type instanceof RegExp) {
-                regexExtractors.push({ reg: type, extractor: extractor.extract });
-            }
+const typeExtractors = new Map<string, Extractor>();
+const regexExtractors: { reg: RegExp; extractor: Extractor }[] = [];
+
+function registerExtractor(extractor: ExtractorModule) {
+    for (const type of extractor.types) {
+        if (typeof type === "string") {
+            typeExtractors.set(type.toLowerCase(), extractor.extract);
+        } else {
+            regexExtractors.push({ reg: type, extractor: extractor.extract });
         }
     }
 }
 
-async function initializeExtractors() {
-    hasInitialized = true;
+async function discoverExtractors() {
+    const entries = await readdir(extractorPath);
 
-    // discover available extractors
-    const extractors = await Promise.all(fs.readdirSync(extractorPath).map(async (item: any) => {
-        const fullExtractorPath = path.join(extractorPath, item);
-        // get the extractor
-        const { default: extractor } = await import(pathToFileURL(fullExtractorPath).toString());
+    // `pathToFileURL` is required here: on Windows a bare absolute path is not
+    // a valid import specifier.
+    const extractors = await Promise.all(
+        entries.map(async (entry) => {
+            const { default: extractor } = (await import(
+                pathToFileURL(path.join(extractorPath, entry)).href
+            )) as { default: ExtractorModule };
 
-        return extractor;
-    }));
+            return extractor;
+        }),
+    );
 
-    // perform any binary tests to ensure extractor is possible
-    // given execution environment
     for (const extractor of extractors) {
         registerExtractor(extractor);
     }
 }
 
-function findExtractor(type: string) {
-    let i;
-    const iLen = regexExtractors.length;
-    let extractor;
-    let regexExtractor;
+// Cache the promise rather than a boolean, so concurrent `extract()` calls
+// share one discovery pass instead of racing each other.
+let discovery: Promise<void> | undefined;
 
-    type = type.toLowerCase();
-    if (typeExtractors[type]) {
-        extractor = typeExtractors[type];
-    } else {
-        for (i = 0; i < iLen; i++) {
-            regexExtractor = regexExtractors[i];
-            if (regexExtractor.reg.test(type)) {
-                extractor = regexExtractor.extractor;
-            }
-        }
-    }
-    return extractor;
+function initializeExtractors(): Promise<void> {
+    return (discovery ??= discoverExtractors());
 }
 
-export async function extract(type: string, filePath: string, options: any): Promise<string | Error> {
-    let error;
-    let msg;
-    let theExtractor;
+function findExtractor(type: string): Extractor | undefined {
+    const lowered = type.toLowerCase();
 
-    if (!hasInitialized) {
-        await initializeExtractors();
-    }
+    return typeExtractors.get(lowered) ?? regexExtractors.findLast(({ reg }) => reg.test(lowered))?.extractor;
+}
 
-    theExtractor = findExtractor(type);
+export async function extract(type: string, filePath: string, options: ExtractOptions): Promise<string | Error> {
+    await initializeExtractors();
 
-    if (theExtractor) {
-        return theExtractor(filePath, options);
-    } else {
+    const theExtractor = findExtractor(type);
+
+    if (!theExtractor) {
         // cannot extract this file type
-        msg = `Error for type: [[ ${type} ]], file: [[ ${filePath} ]]`;
-
-        error = new Error(msg);
-        return error;
+        return new Error(`Error for type: [[ ${type} ]], file: [[ ${filePath} ]]`);
     }
+
+    return theExtractor(filePath, options);
 }

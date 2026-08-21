@@ -1,6 +1,43 @@
 ### 9.0.0
+
+#### Security
+* Bumped `@xmldom/xmldom` 0.8.11 → 0.9.11, clearing five high-severity advisories: XML injection via CDATA ([GHSA-wh4c-j3r5-mjhp](https://github.com/advisories/GHSA-wh4c-j3r5-mjhp)), uncontrolled recursion in serialization ([GHSA-2v35-w6hq-6mfw](https://github.com/advisories/GHSA-2v35-w6hq-6mfw)), and node injection through `DocumentType`, processing-instruction and comment serialization ([GHSA-f6ww-3ggp-fr8h](https://github.com/advisories/GHSA-f6ww-3ggp-fr8h), [GHSA-x6wf-f3px-wcqx](https://github.com/advisories/GHSA-x6wf-f3px-wcqx), [GHSA-j759-j44w-7fr8](https://github.com/advisories/GHSA-j759-j44w-7fr8)). Together with the `yauzl` bump below, `npm audit --omit=dev` now reports zero vulnerabilities.
+* `DOMParser.parseFromString()` now takes the mime type xmldom 0.9 requires (`MIME_TYPE.XML_TEXT`).
+* Extraction output was verified byte-for-byte identical across the 0.8 → 0.9 upgrade for every `.docx` in the test corpus, in both line-break modes.
+
+#### Fixed
+* Fixed: an XML declaration in any archive entry but the first could abort extraction. Each entry's declaration was stripped by matching one exact literal ending in `\r\n`, so entries differing in line ending or attribute order kept theirs, leaving a declaration mid-document. xmldom 0.8 only warned; 0.9 treats it as fatal. Now matched as a pattern anchored to the start of each entry.
+* Fixed: large `.docx` files never finished extracting. `yauzl` 3.2.0 contained an off-by-one error ([GHSA-gmq8-994r-jv83](https://github.com/advisories/GHSA-gmq8-994r-jv83)) that truncated the inflate stream part-way through, so the read stalled with no error rather than completing. Requires `yauzl` >= 3.4.0. This is the long-standing `can handle a huge docx` test failure; the suite is now fully green.
+* Fixed: multi-byte characters that straddled a chunk boundary could be corrupted. Zip entries were decoded by concatenating each `Buffer` separately; they now go through `stream/consumers`, which decodes the entry in one pass.
 * Fixed: `types` pointed at `./dist/index.d`, which is not a real file, so consumers got no type information. It now points at `./dist/index.d.ts`.
+* Fixed: concurrent first calls to `extract()` could each kick off their own extractor-discovery pass. The discovery promise is cached now, so they share one.
+* Fixed: `fromFileWithPath()` threw a `TypeError` for a file whose mime type could not be determined. It returns a descriptive `Error` like every other failure.
+* Removed a dead `os.tmpdir()/textract` directory that was created as an import side effect. Nothing has used it since the `exec`-based extractors were dropped in 5.0.4.
+
+#### Language level and toolchain
+* Build targets ES2025 (`target`/`lib`), up from ES2023, on TypeScript 6.
+* `module`/`moduleResolution` moved from `ESNext`/`Node` to `NodeNext`. The old `Node` value selected legacy node10 resolution, which does not match how this ESM-only package is actually loaded.
+* Enabled `verbatimModuleSyntax`, `erasableSyntaxOnly`, `noUncheckedIndexedAccess`, `rewriteRelativeImportExtensions` and an explicit `rootDir`.
+* Dropped `ts-node`. Tests now run directly off the TypeScript source through Node's built-in type stripping, so relative imports in `src/` are written as `.ts` and rewritten to `.js` on emit.
+* ESLint's parser was configured with `ecmaVersion: 5` and `sourceType: "script"` — wrong on both counts for this codebase. Now `latest`/`module`. Lint is clean; it previously reported 71 errors.
+
+#### Modernized APIs
+* `import.meta.dirname` replaces the `fileURLToPath(import.meta.url)` + `path.dirname` pair.
+* `node:fs/promises` replaces callback `fs.readFile` and sync `fs.readdirSync`, removing two hand-rolled promise wrappers.
+* Adopted yauzl 3.4's promise API: `openPromise()`, `eachEntry()` and `openReadStreamPromise()`. `.docx` archives are now walked with a plain `for await` loop over `eachEntry()`, which replaces the `entry`/`end`/`error` listener setup, the manual `readEntry()` pumping and the `entryCount === ++processedEntries` counter. Errors surface through the promise chain, and the archive is closed automatically when iteration finishes or unwinds. There is no hand-written promise plumbing left in `src/` — no `new Promise`, no `Promise.withResolvers`.
+* Entries are skipped when `entry.canDecodeFileData()` is false — an encrypted entry or an unsupported compression method — instead of failing the whole document. A `.docx` yielding nothing at all still reports the existing "could not find content" error.
+* Bumped `@types/yauzl` 2.10.3 → 3.4.0. It was two majors behind the runtime dependency, so none of the above API was typed.
+* `src/utils.ts` is now purely text cleansing; the two yauzl-specific helpers moved into the extractor that uses them.
+* Paragraph text is now selected with a relative `.//` XPath against the paragraph node. Each paragraph was previously serialized back to a string and re-parsed into its own document purely so an absolute `//` query would stay scoped to it. Output is unchanged; it is also modestly faster (247ms → 205ms on the 863 KB test document) and keeps the source document's namespace declarations in scope instead of re-parsing prefixed markup without them.
+* Extractor lookup uses a `Map` plus `Array.prototype.findLast` instead of an index-counting loop over a plain object.
+
+#### API
+* Added `ExtractOptions`, `Extractor` and `ExtractorModule` type exports, replacing `options: any` throughout.
+* `options` is now optional on both `fromFileWithPath()` and `fromFileWithMimeAndPath()`; it previously had to be passed as `{}`.
 * Added an `exports` map so the package resolves correctly as ESM, with `types` and `default` conditions for the single `.` entry point.
+
+#### Packaging and docs
+* Added `files: ["dist"]`. The tarball had been shipping `.claude/settings.json`, `.mocharc.json` and `eslint.config.mjs`.
 * Removed the `browserslist` config. It never applied — this is a node-only library.
 * `description` and `keywords` corrected to describe what is actually supported (`.docx` and plain text). `.doc` has not been supported since the fork.
 * README rewritten. It still documented the upstream `textract` CLI, the callback API, the buffer and URL entry points, and `tesseract`/`pdftotext`/`odt` options, none of which exist in this package.

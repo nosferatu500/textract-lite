@@ -36,12 +36,12 @@ import { fromFileWithPath, fromFileWithMimeAndPath } from "@nosferatu500/textrac
 
 ### APIs
 
-Both functions are `async` and resolve to either the extracted text or an `Error`. The `options` argument is required — pass `{}` if you have nothing to configure.
+Both functions are `async` and resolve to either the extracted text or an `Error`. `options` is optional.
 
 #### File
 
 ```javascript
-const text = await fromFileWithPath(filePath, {});
+const text = await fromFileWithPath(filePath);
 ```
 
 The mime type is derived from `filePath`.
@@ -49,28 +49,39 @@ The mime type is derived from `filePath`.
 #### File + mime type
 
 ```javascript
-const text = await fromFileWithMimeAndPath(type, filePath, {});
+const text = await fromFileWithMimeAndPath(type, filePath);
 ```
 
 Use this when the file name doesn't reflect its contents, or when you already know the type.
 
 ### Error handling
 
-Extraction failures are reported two different ways, so handle both: most failures **resolve** with an `Error` (unsupported mime type, missing file, undetectable text encoding), while some `.docx` failures **reject** (a file that isn't really a zip, or a `.docx` with no extractable content).
+Extraction failures are reported two different ways, so handle both: most failures **resolve** with an `Error` (unsupported mime type, undeterminable mime type, missing file, undetectable text encoding, a file that isn't really a zip), while a `.docx` with no extractable content **rejects**.
 
 ```javascript
 try {
-    const result = await fromFileWithPath(filePath, {});
+    const result = await fromFileWithPath(filePath);
     if (result instanceof Error) {
-        // unsupported type, missing file, unknown encoding, ...
+        // unsupported/unknown type, missing file, unknown encoding, not a zip
         console.error(result.message);
     } else {
         console.log(result);
     }
 } catch (error) {
-    // malformed .docx, empty .docx, unreadable file
+    // .docx containing no extractable content
     console.error(error);
 }
+```
+
+### TypeScript
+
+The package ships its own types. `ExtractOptions` is exported for annotating a shared config object:
+
+```typescript
+import { fromFileWithPath, type ExtractOptions } from "@nosferatu500/textract-lite";
+
+const options: ExtractOptions = { preserveLineBreaks: true };
+const text = await fromFileWithPath(filePath, options);
 ```
 
 ## Configuration
@@ -92,6 +103,10 @@ const csv = await fromFileWithPath("data.dat", { typeOverride: "application/csv"
 * All extracted text is passed through a cleansing step that normalizes typographic quotes, ellipses and long hyphens, collapses runs of whitespace, and decodes XML entities.
 
 ## Development
+
+The build targets ES2025 and the package is ESM only. Tests run straight from the
+TypeScript source using Node's built-in type stripping, so there is no transpiling
+test loader to configure.
 
 ```
 npm install

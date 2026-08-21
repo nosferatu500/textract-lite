@@ -1,11 +1,9 @@
 import { expect } from 'chai';
-import path from "path";
-import { fromFileWithPath } from '../src';
+import path from "node:path";
+import { fromFileWithPath } from '../src/index.ts';
 
-import { fileURLToPath } from "node:url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = import.meta.dirname;
 
 describe("textract", () => {
     describe("for .docx files", () => {
